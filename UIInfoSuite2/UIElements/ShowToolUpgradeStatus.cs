@@ -5,18 +5,18 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Infrastructure.Extensions;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Extensions;
 
-namespace UIInfoSuite.UIElements
+namespace UIInfoSuite2.UIElements
 {
-    class ShowToolUpgradeStatus : IDisposable
+    internal class ShowToolUpgradeStatus : IDisposable
     {
         #region Properties
-        private readonly PerScreen<Rectangle> _toolTexturePosition = new PerScreen<Rectangle>();
-        private readonly PerScreen<string> _hoverText = new PerScreen<string>();
-        private readonly PerScreen<Tool> _toolBeingUpgraded = new PerScreen<Tool>();
-        private readonly PerScreen<ClickableTextureComponent> _toolUpgradeIcon = new PerScreen<ClickableTextureComponent>();
+        private readonly PerScreen<Rectangle> _toolTexturePosition = new();
+        private readonly PerScreen<string> _hoverText = new();
+        private readonly PerScreen<Tool> _toolBeingUpgraded = new();
+        private readonly PerScreen<ClickableTextureComponent> _toolUpgradeIcon = new();
 
         private readonly IModHelper _helper;
         #endregion
@@ -77,7 +77,24 @@ namespace UIInfoSuite.UIElements
                         Game1.toolSpriteSheet,
                         _toolTexturePosition.Value,
                         2.5f);
-                _toolUpgradeIcon.Value.draw(Game1.spriteBatch);
+
+                // Special case for the Love of Cooking mod's frying pan
+                if (_toolBeingUpgraded.Value.GetType().FullName == "LoveOfCooking.Objects.CookingTool")
+                {
+                    try
+                    {
+                        _toolBeingUpgraded.Value.drawInMenu(e.SpriteBatch, iconPosition.ToVector2() - new Vector2(16) / 2, 2.5f / Game1.pixelZoom);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModEntry.MonitorObject.LogOnce("An error occured while drawing the frying pan icon from the Love of Cooking mod.", LogLevel.Error);
+                        ModEntry.MonitorObject.Log(ex.ToString());
+                    }
+                }
+                else
+                {
+                    _toolUpgradeIcon.Value.draw(e.SpriteBatch);
+                }
             }
         }
 

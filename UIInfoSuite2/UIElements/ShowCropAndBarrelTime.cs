@@ -11,18 +11,20 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Infrastructure.Extensions;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Extensions;
 
-namespace UIInfoSuite.UIElements
+namespace UIInfoSuite2.UIElements
 {
-    class ShowCropAndBarrelTime : IDisposable
+    internal class ShowCropAndBarrelTime : IDisposable
     {
-        private readonly Dictionary<int, string> _indexOfCropNames = new Dictionary<int, string>();
-        private readonly PerScreen<StardewValley.Object> _currentTile = new PerScreen<StardewValley.Object>();
-        private readonly PerScreen<TerrainFeature> _terrain = new PerScreen<TerrainFeature>();
-        private readonly PerScreen<Building> _currentTileBuilding = new PerScreen<Building>();
+        private readonly Dictionary<int, string> _indexOfCropNames = new();
+        private readonly PerScreen<StardewValley.Object> _currentTile = new();
+        private readonly PerScreen<TerrainFeature> _terrain = new();
+        private readonly PerScreen<Building> _currentTileBuilding = new();
         private readonly IModHelper _helper;
+
+        private readonly Dictionary<string, string> _indexOfDgaCropNames = new();
 
         public ShowCropAndBarrelTime(IModHelper helper)
         {
@@ -49,37 +51,34 @@ namespace UIInfoSuite.UIElements
             if (!e.IsMultipleOf(4))
                 return;
 
-            var gamepadTile = Game1.player.CurrentTool != null ? Utility.snapToInt(Game1.player.GetToolLocation()/Game1.tileSize) : Utility.snapToInt(Game1.player.GetGrabTile());
+            _currentTileBuilding.Value = null;
+            _currentTile.Value = null;
+            _terrain.Value = null;
+
+            var gamepadTile = Game1.player.CurrentTool != null ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize) : Utility.snapToInt(Game1.player.GetGrabTile());
             var mouseTile = Game1.currentCursorTile;
 
             var tile = (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0) ? gamepadTile : mouseTile;
 
-            // get tile under cursor
-            _currentTileBuilding.Value = Game1.currentLocation is BuildableGameLocation buildableLocation
-                ? buildableLocation.getBuildingAt(tile)
-                : null;
+            if (Game1.currentLocation is BuildableGameLocation buildableLocation)
+                _currentTileBuilding.Value = buildableLocation.getBuildingAt(tile);
 
             if (Game1.currentLocation != null)
             {
                 if (Game1.currentLocation.Objects != null && Game1.currentLocation.Objects.TryGetValue(tile, out var currentObject))
                     _currentTile.Value = currentObject;
-                else
-                    _currentTile.Value = null;
 
                 if (Game1.currentLocation.terrainFeatures != null && Game1.currentLocation.terrainFeatures.TryGetValue(tile, out var terrain))
                     _terrain.Value = terrain;
-                else
+
+                // Make sure that _terrain is null before overwriting it because Tea Saplings are added to terrainFeatures and not IndoorPot.bush
+                if (_terrain.Value == null && _currentTile.Value is IndoorPot pot)
                 {
-                    if (_currentTile.Value is IndoorPot pot && pot.hoeDirt.Value != null)
+                    if (pot.hoeDirt.Value != null)
                         _terrain.Value = pot.hoeDirt.Value;
-                    else
-                        _terrain.Value = null;
+                    if (pot.bush.Value != null)
+                        _terrain.Value = pot.bush.Value;
                 }
-            }
-            else
-            {
-                _currentTile.Value = null;
-                _terrain.Value = null;
             }
         }
 
@@ -93,6 +92,9 @@ namespace UIInfoSuite.UIElements
         /// <param name="e">The event arguments.</param>
         private void OnRenderingHud(object sender, RenderingHudEventArgs e)
         {
+            if (Game1.activeClickableMenu != null)
+                return;
+
             var currentTileBuilding = _currentTileBuilding.Value;
             var currentTile = _currentTile.Value;
             var terrain = _terrain.Value;
@@ -139,7 +141,7 @@ namespace UIInfoSuite.UIElements
                         overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
                         overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
                     }
-                    
+
                     IClickableMenu.drawHoverText(
                         Game1.spriteBatch,
                         builder.ToString(),
@@ -158,7 +160,7 @@ namespace UIInfoSuite.UIElements
                     StringBuilder hoverText = new StringBuilder();
 
                     hoverText.AppendLine(currentTile.heldObject.Value.DisplayName);
-                    
+
                     if (currentTile is Cask)
                     {
                         Cask currentCask = currentTile as Cask;
@@ -246,26 +248,19 @@ namespace UIInfoSuite.UIElements
                             }
                         }
 
-                        if (hoeDirt.crop.indexOfHarvest.Value > 0)
+                        string? harvestName = this.GetCropHarvestName(hoeDirt.crop);
+                        if (!String.IsNullOrEmpty(harvestName))
                         {
-                            string hoverText = _indexOfCropNames.SafeGet(hoeDirt.crop.indexOfHarvest.Value);
-                            if (string.IsNullOrEmpty(hoverText))
-                            {
-                                hoverText = new StardewValley.Object(new Debris(hoeDirt.crop.indexOfHarvest.Value, Vector2.Zero, Vector2.Zero).chunkType.Value, 1).DisplayName;
-                                _indexOfCropNames.Add(hoeDirt.crop.indexOfHarvest.Value, hoverText);
-                            }
-
-                            StringBuilder finalHoverText = new StringBuilder();
-                            finalHoverText.Append(hoverText).Append(": ");
+                            StringBuilder hoverText = new StringBuilder(harvestName).Append(": ");
                             if (num > 0)
                             {
-                                finalHoverText.Append(num).Append(" ")
+                                hoverText.Append(num).Append(" ")
                                     .Append(_helper.SafeGetString(
                                         LanguageKeys.Days));
                             }
                             else
                             {
-                                finalHoverText.Append(_helper.SafeGetString(
+                                hoverText.Append(_helper.SafeGetString(
                                     LanguageKeys.ReadyToHarvest));
                             }
 
@@ -278,7 +273,7 @@ namespace UIInfoSuite.UIElements
 
                             IClickableMenu.drawHoverText(
                                 Game1.spriteBatch,
-                                finalHoverText.ToString(),
+                                hoverText.ToString(),
                                 Game1.smallFont, overrideX: overrideX, overrideY: overrideY);
                         }
                     }
@@ -307,6 +302,72 @@ namespace UIInfoSuite.UIElements
                             text,
                             Game1.smallFont, overrideX: overrideX, overrideY: overrideY);
                 }
+                else if (terrain is Bush bush)
+                {
+                    // Tea saplings (which are actually bushes)
+                    if (bush.size.Value == Bush.greenTeaBush)
+                    {
+                        int teaAge = bush.getAge();
+                        if (teaAge < 20)
+                        {
+                            string text = new StardewValley.Object(251, 1).DisplayName
+                                + $"\n{20 - teaAge} "
+                                + _helper.SafeGetString(LanguageKeys.DaysToMature);
+
+                            if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
+                            {
+                                var tilePosition = Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(new Vector2(terrain.currentTileLocation.X, terrain.currentTileLocation.Y) * Game1.tileSize));
+                                overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
+                                overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
+                            }
+
+                            IClickableMenu.drawHoverText(
+                                Game1.spriteBatch,
+                                text,
+                                Game1.smallFont, overrideX: overrideX, overrideY: overrideY);
+                        }
+                    }
+                }
+            }
+        }
+
+        string? GetCropHarvestName(Crop crop)
+        {
+            if (crop.indexOfHarvest.Value > 0)
+            {
+                int itemId = crop.isWildSeedCrop() ? crop.whichForageCrop.Value : crop.indexOfHarvest.Value;
+                if (!_indexOfCropNames.TryGetValue(itemId, out string? harvestName)) {
+                    harvestName = new StardewValley.Object(itemId, 1).DisplayName;
+                    _indexOfCropNames.Add(itemId, harvestName);
+                }
+                return harvestName;
+            }
+            else if (ModEntry.DGA.IsCustomCrop(crop, out var dgaHelper))
+            {
+                string? cropId = null;
+                try
+                {
+                    cropId = dgaHelper.GetFullId(crop)!;
+                    if (!_indexOfDgaCropNames.TryGetValue(cropId, out string? harvestName)) {
+                        var harvestCrop = dgaHelper.GetCropHarvest(crop);
+                        if (harvestCrop == null)
+                            return null;
+                        
+                        harvestName = harvestCrop.DisplayName;
+                        _indexOfDgaCropNames.Add(cropId, harvestName);
+                    }
+                    return harvestName;
+                }
+                catch (Exception e)
+                {
+                    ModEntry.MonitorObject.LogOnce($"An error occured while retrieving the crop harvest name for {cropId ?? "unknownCrop"}.", LogLevel.Error);
+                    ModEntry.MonitorObject.Log(e.ToString(), LogLevel.Debug);
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
             }
         }
     }

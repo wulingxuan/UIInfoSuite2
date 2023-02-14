@@ -1,20 +1,21 @@
-﻿using System;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using UIInfoSuite.AdditionalFeatures;
-using UIInfoSuite.Compatibility;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Options;
+using System;
+using UIInfoSuite2.AdditionalFeatures;
+using UIInfoSuite2.Compatibility;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Options;
 
-namespace UIInfoSuite
+namespace UIInfoSuite2
 {
     public class ModEntry : Mod
     {
 
         #region Properties
         public static IMonitor MonitorObject { get; private set; }
+        public static DynamicGameAssetsEntry DGA { get; private set; }
 
         private static SkipIntro _skipIntro; // Needed so GC won't throw away object with subscriptions
         private static ModConfig _modConfig;
@@ -30,6 +31,7 @@ namespace UIInfoSuite
         public override void Entry(IModHelper helper)
         {
             MonitorObject = Monitor;
+            DGA = new DynamicGameAssetsEntry(Helper, Monitor);
 
             _skipIntro = new SkipIntro(helper.Events);
             _modConfig = Helper.ReadConfig<ModConfig>();
@@ -111,7 +113,8 @@ namespace UIInfoSuite
             // get Generic Mod Config Menu's API (if it's installed)
             var modVersion = Helper.ModRegistry.Get("spacechase0.GenericModConfigMenu")?.Manifest?.Version;
             var minModVersion = "1.6.0";
-            if (modVersion?.IsOlderThan(minModVersion) == true) {
+            if (modVersion?.IsOlderThan(minModVersion) == true)
+            {
                 Monitor.Log($"Detected Generic Mod Config Menu {modVersion} but expected {minModVersion} or newer. Disabling integration with that mod.", LogLevel.Warn);
                 return;
             }

@@ -1,25 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Menus;
 using System;
-using Microsoft.Xna.Framework.Graphics;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Infrastructure.Extensions;
-using StardewValley.Buildings;
-using StardewModdingAPI.Utilities;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Extensions;
 
-namespace UIInfoSuite.UIElements
+namespace UIInfoSuite2.UIElements
 {
-    class ShowRobinBuildingStatusIcon : IDisposable
+    internal class ShowRobinBuildingStatusIcon : IDisposable
     {
         #region Properties
 
         private bool _IsBuildingInProgress;
-        Rectangle? _buildingIconSpriteLocation;
+        private Rectangle? _buildingIconSpriteLocation;
         private string _hoverText;
-        private PerScreen<ClickableTextureComponent> _buildingIcon = new PerScreen<ClickableTextureComponent>();
+        private PerScreen<ClickableTextureComponent> _buildingIcon = new();
         private Texture2D _robinIconSheet;
 
         private readonly IModHelper _helper;
@@ -109,19 +109,18 @@ namespace UIInfoSuite.UIElements
 
         private void FindRobinSpritesheet()
         {
-            foreach (var location in Game1.locations)
+            Texture2D? foundTexture = Game1.getCharacterFromName("Robin")?.Sprite?.Texture;
+            if (foundTexture != null)
             {
-                foreach (var character in location.characters)
-                {
-                    if (character.Name == "Robin")
-                    {
-                        _robinIconSheet = character.Sprite.Texture;
-                        break;
-                    }
-                }
-
-                if (_robinIconSheet != null)
-                    break;
+                _robinIconSheet = foundTexture;
+            }
+            else
+            {
+                ModEntry.MonitorObject.Log($"{this.GetType().Name}: Could not find Robin spritesheet.", LogLevel.Warn);
+            }
+            if (_robinIconSheet == null)
+            {
+                ModEntry.MonitorObject.Log($"{this.GetType().Name}: Could not find Robin spritesheet.", LogLevel.Warn);
             }
 
             _buildingIconSpriteLocation = new Rectangle(0, 195 + 1, 15, 15 - 1);    // 1px edits for better alignment with other icons

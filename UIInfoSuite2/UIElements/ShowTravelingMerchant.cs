@@ -6,10 +6,10 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
 using System.Linq;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Infrastructure.Extensions;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Extensions;
 
-namespace UIInfoSuite.UIElements
+namespace UIInfoSuite2.UIElements
 {
     public class ShowTravelingMerchant : IDisposable
     {
@@ -18,7 +18,8 @@ namespace UIInfoSuite.UIElements
         private bool _travelingMerchantIsVisited;
         private ClickableTextureComponent _travelingMerchantIcon;
 
-        public bool HideWhenVisited { get; set; }
+        private bool Enabled { get; set; }
+        private bool HideWhenVisited { get; set; }
 
         private readonly IModHelper _helper;
         #endregion
@@ -37,6 +38,8 @@ namespace UIInfoSuite.UIElements
 
         public void ToggleOption(bool showTravelingMerchant)
         {
+            Enabled = showTravelingMerchant;
+
             _helper.Events.Display.RenderingHud -= OnRenderingHud;
             _helper.Events.Display.RenderedHud -= OnRenderedHud;
             _helper.Events.GameLoop.DayStarted -= OnDayStarted;
@@ -55,6 +58,7 @@ namespace UIInfoSuite.UIElements
         public void ToggleHideWhenVisitedOption(bool hideWhenVisited)
         {
             HideWhenVisited = hideWhenVisited;
+            ToggleOption(Enabled);
         }
         #endregion
 

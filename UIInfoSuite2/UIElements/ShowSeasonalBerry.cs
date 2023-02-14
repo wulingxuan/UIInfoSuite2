@@ -4,22 +4,24 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using UIInfoSuite.Infrastructure;
-using UIInfoSuite.Infrastructure.Extensions;
+using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Extensions;
 
-namespace UIInfoSuite.UIElements
+namespace UIInfoSuite2.UIElements
 {
-    class ShowSeasonalBerry : IDisposable
+    internal class ShowSeasonalBerry : IDisposable
     {
         #region Properties
 
-        Rectangle? _berrySpriteLocation;
+        private Rectangle? _berrySpriteLocation;
         private float _spriteScale = 8 / 3f;
         private string _hoverText;
         private ClickableTextureComponent _berryIcon;
 
         private readonly IModHelper _helper;
-        public bool ShowHazelnut { get; set; }
+
+        private bool Enabled { get; set; }
+        private bool ShowHazelnut { get; set; }
 
         #endregion
 
@@ -37,6 +39,8 @@ namespace UIInfoSuite.UIElements
 
         public void ToggleOption(bool showSeasonalBerry)
         {
+            Enabled = showSeasonalBerry;
+
             _berrySpriteLocation = null;
             _helper.Events.GameLoop.DayStarted -= OnDayStarted;
             _helper.Events.Display.RenderingHud -= OnRenderingHud;
@@ -55,8 +59,7 @@ namespace UIInfoSuite.UIElements
         public void ToggleHazelnutOption(bool showHazelnut)
         {
             ShowHazelnut = showHazelnut;
-
-            UpdateBerryForDay();
+            ToggleOption(Enabled);
         }
 
         #endregion

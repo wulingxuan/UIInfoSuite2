@@ -286,3 +286,8 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+# General Files
+[Dd]esktop.ini
+.D[Ss]_Store
+.vscode

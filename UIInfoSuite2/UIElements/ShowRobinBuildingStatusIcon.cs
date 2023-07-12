@@ -90,20 +90,36 @@ namespace UIInfoSuite2.UIElements
         #endregion
 
         #region Logic
+        private int GetRemainingDaysForConstruction()
+        {
+            int remainingDays = Game1.player.daysUntilHouseUpgrade.Value;
+
+            if (remainingDays <= 0)
+            {
+                Building b = Game1.getFarm().getBuildingUnderConstruction();
+
+                if (b is not null)
+                    return Math.Max(b.daysOfConstructionLeft.Value, b.daysUntilUpgrade.Value);
+            }
+
+            return remainingDays;
+        }
+
         private void UpdateRobinBuindingStatusData()
         {
-            Building buildingUnderConstruction = Game1.getFarm().getBuildingUnderConstruction();
-            if (buildingUnderConstruction is null)
+            int remainingDays = GetRemainingDaysForConstruction();
+
+            if (remainingDays > 0)
             {
-                _IsBuildingInProgress = false;
-                _hoverText = String.Empty;
+                _IsBuildingInProgress = true;
+                _hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), remainingDays);
+
+                FindRobinSpritesheet();
             }
             else
             {
-                _IsBuildingInProgress = true;
-                _hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), buildingUnderConstruction.daysOfConstructionLeft.Value > 0 ? buildingUnderConstruction.daysOfConstructionLeft.Value : buildingUnderConstruction.daysUntilUpgrade.Value);
-
-                FindRobinSpritesheet();
+                _IsBuildingInProgress = false;
+                _hoverText = String.Empty;
             }
         }
 

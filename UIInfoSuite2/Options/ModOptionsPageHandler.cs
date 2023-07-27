@@ -1,4 +1,4 @@
-﻿using StardewModdingAPI;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -23,6 +23,7 @@ namespace UIInfoSuite2.Options
         private ModOptionsPageButton _modOptionsPageButton;
         private int _modOptionsTabPageNumber;
 
+        private bool _rightTriggerPressed = false;
         private PerScreen<IClickableMenu> _lastMenu = new();        
         private List<int> _instancesWithOptionsPageOpen = new();
         private bool _windowResizing = false;
@@ -31,6 +32,8 @@ namespace UIInfoSuite2.Options
         {
             if (showPersonalConfigButton)
             {
+                helper.Events.Input.ButtonPressed += OnButtonPressed;
+                helper.Events.GameLoop.UpdateTicking += OnUpdate;
                 helper.Events.Display.RenderingActiveMenu += OnRenderingMenu;
                 helper.Events.Display.RenderedActiveMenu += OnRenderedMenu;
                 GameRunner.instance.Window.ClientSizeChanged += OnWindowClientSizeChanged;
@@ -129,6 +132,28 @@ namespace UIInfoSuite2.Options
             {
                 gameMenu.currentTab = _modOptionsTabPageNumber;
                 Game1.playSound("smallSelect");
+            }
+        }
+
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
+            if (e.Button == SButton.RightTrigger)
+            {
+                _rightTriggerPressed = true;
+            }
+        }
+
+        private void OnUpdate(object sender, EventArgs e) {
+            if (_rightTriggerPressed)
+            {
+                _rightTriggerPressed = false;
+
+                // Handle right trigger to switch to our mod options page
+                if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab + 1 == _modOptionsTabPageNumber)
+                {
+                    gameMenu.currentTab = _modOptionsTabPageNumber;
+                    Game1.playSound("smallSelect");
+                }
+                // NB: The game does the correct thing for left trigger so we don't need to implement it. 
             }
         }
 

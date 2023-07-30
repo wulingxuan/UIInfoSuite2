@@ -11,8 +11,15 @@ using UIInfoSuite2.UIElements;
 
 namespace UIInfoSuite2.Options
 {
+    /// <summary>
+    /// A mix between working around <see cref="GameMenu"/> to add our mod options page,
+    /// and loading the UI elements with their logic.
+    /// </summary>
     internal class ModOptionsPageHandler : IDisposable
     {
+        // Our mod options tab is positioned approximately above the 11th inventory cell
+        private const int downNeighborInInventory = 10;
+
         private readonly IModHelper _helper;
         private readonly bool _showPersonalConfigButton;
         
@@ -20,10 +27,11 @@ namespace UIInfoSuite2.Options
         private readonly List<IDisposable> _elementsToDispose;
 
         private ModOptionsPage _modOptionsPage;
+        private ClickableComponent? _modOptionsTab;
         private ModOptionsPageButton _modOptionsPageButton;
         private int _modOptionsTabPageNumber;
 
-        private bool _rightTriggerPressed = false;
+        private PerScreen<int?> _lastMenuTab = new();
         private PerScreen<IClickableMenu> _lastMenu = new();        
         private List<int> _instancesWithOptionsPageOpen = new();
         private bool _windowResizing = false;
@@ -33,7 +41,7 @@ namespace UIInfoSuite2.Options
             if (showPersonalConfigButton)
             {
                 helper.Events.Input.ButtonPressed += OnButtonPressed;
-                helper.Events.GameLoop.UpdateTicking += OnUpdate;
+                helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
                 helper.Events.Display.RenderingActiveMenu += OnRenderingMenu;
                 helper.Events.Display.RenderedActiveMenu += OnRenderedMenu;
                 GameRunner.instance.Window.ClientSizeChanged += OnWindowClientSizeChanged;
@@ -125,43 +133,50 @@ namespace UIInfoSuite2.Options
                 item.Dispose();
         }
 
-        private void OnButtonLeftClicked(object sender, EventArgs e)
+        private void OnButtonLeftClicked(object? sender, EventArgs e)
         {
             // Do not activate when an action is being remapped
-            if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.readyToClose())
+            if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.readyToClose() && gameMenu.currentTab != _modOptionsTabPageNumber)
             {
-                gameMenu.currentTab = _modOptionsTabPageNumber;
-                Game1.playSound("smallSelect");
+                ChangeToOurTab(gameMenu);
             }
         }
 
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e) {
-            if (e.Button == SButton.RightTrigger)
+        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
             {
-                _rightTriggerPressed = true;
-            }
-        }
-
-        private void OnUpdate(object sender, EventArgs e) {
-            if (_rightTriggerPressed)
+            // Handle right trigger to switch to our mod options page
+            if (Game1.activeClickableMenu is GameMenu gameMenu && (e.Button == SButton.RightTrigger) && !e.IsSuppressed())
             {
-                _rightTriggerPressed = false;
-
-                // Handle right trigger to switch to our mod options page
-                if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab + 1 == _modOptionsTabPageNumber)
+                if ((gameMenu.currentTab + 1 == _modOptionsTabPageNumber) && gameMenu.readyToClose())
                 {
-                    gameMenu.currentTab = _modOptionsTabPageNumber;
-                    Game1.playSound("smallSelect");
+                    ChangeToOurTab(gameMenu);
+                    _helper.Input.Suppress(SButton.RightTrigger);
                 }
                 // NB: The game does the correct thing for left trigger so we don't need to implement it. 
             }
         }
 
-        // Early because it is called during Display.RenderingActiveMenu instead of later during Display.MenuChanged,
+        private void OnUpdateTicked(object? sender, EventArgs e)
+            {
+
+            var gameMenu = Game1.activeClickableMenu as GameMenu;
+
+            if (_lastMenu.Value != Game1.activeClickableMenu)
+                {
+                EarlyOnMenuChanged(_lastMenu.Value, Game1.activeClickableMenu);
+                _lastMenu.Value = Game1.activeClickableMenu;
+                }
+            
+            if (_lastMenuTab.Value != gameMenu?.currentTab)
+            {
+                OnGameMenuTabChanged(gameMenu);
+                _lastMenuTab.Value = gameMenu?.currentTab;
+            }
+        }
+
+        // Early because it is called during GameLoop.UpdateTicked instead of later during Display.MenuChanged,
         private void EarlyOnMenuChanged(IClickableMenu? oldMenu, IClickableMenu? newMenu)
         {
-            if (_showPersonalConfigButton)
-            {
                 // Remove from old menu
                 if (oldMenu is GameMenu oldGameMenu)
                 {
@@ -190,26 +205,67 @@ namespace UIInfoSuite2.Options
                     List<IClickableMenu> tabPages = newGameMenu.pages;
                     _modOptionsTabPageNumber = tabPages.Count;
                     tabPages.Add(_modOptionsPage);
+
+                // Handle gamepad movement
+                _modOptionsTab = new ClickableComponent(
+                    new Microsoft.Xna.Framework.Rectangle(
+                        newGameMenu.xPositionOnScreen + newGameMenu.width - 200,
+                        newGameMenu.yPositionOnScreen + IClickableMenu.tabYPositionRelativeToMenuY + 64,
+                        64, 64),
+                    "uiinfosuite2",
+                    Game1.content.LoadString("Strings\\UI:GameMenu_Exit"))
+                    {
+                        // The exit page tab ID is 12347
+                        myID = 12348,
+                        downNeighborID = downNeighborInInventory,
+                        leftNeighborID = 12347,
+                        tryDefaultIfNoDownNeighborExists = true,
+                        fullyImmutable = true
+                    };
+
+                // Do not add our tab to GameMenu.tabs because GameMenu.draw will draw the menu tab incorrectly
+                // when our page is the current tab.
+
+                var exitTab = newGameMenu.tabs.Find(tab => tab.myID == 12347);
+                if (exitTab != null)
+                {
+                    exitTab.rightNeighborID = _modOptionsTab.myID;
+                    newGameMenu.GetCurrentPage().allClickableComponents.Add(_modOptionsTab);
+                }
+            }
+        }
+
+        private void OnGameMenuTabChanged(GameMenu? gameMenu) {
+            if (gameMenu != null)
+        {
+                // Based on GameMenu.setTabNeighborsForCurrentPage
+                switch (gameMenu.currentTab) {
+                    case GameMenu.inventoryTab: 
+                        _modOptionsTab.downNeighborID = downNeighborInInventory;
+                        break;
+                    case GameMenu.exitTab:
+                        _modOptionsTab.downNeighborID = 535;
+                        break;
+                    default:
+                        _modOptionsTab.downNeighborID = ClickableComponent.SNAP_TO_DEFAULT;
+                        break;
+                }
+
+                // Avoid adding it twice if this.ChangeToOurTab already added it
+                if (gameMenu.GetCurrentPage().allClickableComponents.Find(x => x == _modOptionsTab) == null)
+            {
+                    gameMenu.GetCurrentPage().allClickableComponents.Add(_modOptionsTab);
                 }
             }
         }
 
         private void OnRenderingMenu(object sender, RenderingActiveMenuEventArgs e)
-        {
-            if (_showPersonalConfigButton)
-            {
-                // Trigger the "EarlyOnMenuChanged" event
-                if (_lastMenu.Value != Game1.activeClickableMenu)
                 {
-                    EarlyOnMenuChanged(_lastMenu.Value, Game1.activeClickableMenu);
-                    _lastMenu.Value = Game1.activeClickableMenu;
-                }
                 if (Game1.activeClickableMenu is GameMenu gameMenu)
                 {
                     // Draw our tab icon behind the menu even if it is dimmed by the menu's transparent background,
                     // so that it still displays during transitions eg. when a letter is viewed in the collections tab
                     DrawButton(gameMenu);
-                }
             }
         }
 
@@ -262,6 +318,26 @@ namespace UIInfoSuite2.Options
                         }
                     }
                 });
+            }
+        }
+
+        // Based on GameMenu.changeTab
+        private void ChangeToOurTab(GameMenu gameMenu) {
+            gameMenu.currentTab = _modOptionsTabPageNumber;
+            gameMenu.lastOpenedNonMapTab = _modOptionsTabPageNumber;
+            gameMenu.initializeUpperRightCloseButton();
+            gameMenu.invisible = false;
+            Game1.playSound("smallSelect");
+            
+            // We don't need to call GameMenu.AddTabsToClickableComponents because populateClickableComponentList already does it for us.
+            // However, we must add our mod options tab now because snapToDefaultClickableComponent might use it.
+            gameMenu.GetCurrentPage().populateClickableComponentList();
+            gameMenu.GetCurrentPage().allClickableComponents.Add(_modOptionsTab);
+
+            gameMenu.setTabNeighborsForCurrentPage(); 
+            if (Game1.options.SnappyMenus)
+            {
+                gameMenu.snapToDefaultClickableComponent();
             }
         }
 

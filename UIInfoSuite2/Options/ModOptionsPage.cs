@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI.Events;
@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace UIInfoSuite2.Options
 {
+    /// <summary>Our mod options made page to be added to <see cref="GameMenu.pages"/></summary>
     public class ModOptionsPage : IClickableMenu
     {
         private const int Width = 800;
@@ -117,6 +118,19 @@ namespace UIInfoSuite2.Options
             }
         }
 
+        public override void snapToDefaultClickableComponent()
+        {
+            // TODO set the default component to the first thing
+            base.currentlySnappedComponent = base.getComponentWithID(12348);
+            this.snapCursorToCurrentSnappedComponent();
+        }
+
+        protected override void noSnappedComponentFound(int direction, int oldRegion, int oldID)
+        {
+            base.noSnappedComponentFound(direction, oldRegion, oldID);
+            ModEntry.MonitorObject.Log($"ModOptionsPage: no snapped component found. direction = {direction}, oldID = {oldID}");
+        }
+
         private void SetScrollBarToCurrentItem()
         {
             if (_options.Count > 0)
@@ -168,6 +182,10 @@ namespace UIInfoSuite2.Options
 
         public override void receiveKeyPress(Keys key)
         {
+            base.receiveKeyPress(key);
+            return;
+
+            // TODO investigate what this is supposed to do
             if (_optionsSlotHeld > -1 &&
                 _optionsSlotHeld + _currentItemIndex < _options.Count)
             {
@@ -277,10 +295,12 @@ namespace UIInfoSuite2.Options
 
         public override void receiveGamePadButton(Buttons b)
         {
-            if (b == Buttons.A)
-            {
-                receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
-            }
+            // TODO remove because the game implements translates gamepad buttons to clicks and key presses already
+            //      since we don't override implementsGamepadControls
+            // if (b == Buttons.A)
+            // {
+            //     receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
+            // }
         }
 
         public override void performHoverAction(int x, int y)

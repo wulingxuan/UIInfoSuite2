@@ -89,8 +89,7 @@ namespace UIInfoSuite2.Options
             };
 
             int whichOption = 1;
-            Version thisVersion = Assembly.GetAssembly(this.GetType()).GetName().Version;
-            _optionsElements.Add(new ModOptionsElement("UI Info Suite 2 v" + thisVersion.Major + "." + thisVersion.Minor + "." + thisVersion.Build));
+            _optionsElements.Add(new ModOptionsElement($"UI Info Suite 2 {GetVersionString(helper)}"));
 
             var luckIcon = new ModOptionsCheckbox(_helper.SafeGetString(nameof(options.ShowLuckIcon)), whichOption++, luckOfDay.ToggleOption, () => options.ShowLuckIcon, v => options.ShowLuckIcon = v);
             _optionsElements.Add(luckIcon);
@@ -345,6 +344,31 @@ namespace UIInfoSuite2.Options
         {
             _modOptionsPageButton.yPositionOnScreen = gameMenu.yPositionOnScreen + (gameMenu.currentTab == _modOptionsTabPageNumber ? 24 : 16);
             _modOptionsPageButton.draw(Game1.spriteBatch);
+        }
+
+        /// <summary>
+        /// Tries hard to return a version string for the mod like "v2.2.9"
+        /// 
+        /// <para>Try to get the version from the SMAPI manifest; then from the assembly in which case it is formatted as v=...;
+        /// then give up and return a default value.</para>
+        /// </summary>
+        private static string GetVersionString(IModHelper helper)
+        {
+            var modInfo = helper.ModRegistry.Get(helper.ModRegistry.ModID);
+            if (modInfo != null)
+            {
+                return $"v{modInfo.Manifest.Version}";
+            }
+            ModEntry.MonitorObject.LogOnce($"{typeof(ModOptionsPageHandler).Name}: Couldn't retrieve our own mod information", LogLevel.Info);
+
+            var assemblyVersion = Assembly.GetAssembly(typeof(ModEntry))?.GetName().Version;
+            if (assemblyVersion != null)
+            {
+                return $"v={assemblyVersion}";
+            }
+            ModEntry.MonitorObject.LogOnce($"{typeof(ModOptionsPageHandler).Name}: Couldn't retrieve our own assembly version information");
+
+            return $"(unknown version)";
         }
     }
 }

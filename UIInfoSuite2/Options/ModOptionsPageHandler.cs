@@ -37,10 +37,15 @@ namespace UIInfoSuite2.Options
         private PerScreen<int?> _modOptionsTabPageNumber = new();
 
         private PerScreen<int?> _lastMenuTab = new();
-        private PerScreen<IClickableMenu> _lastMenu = new();        
+        private PerScreen<IClickableMenu?> _lastMenu = new();        
+
+        // For the window resize workaround
         private List<int> _instancesWithOptionsPageOpen = new();
         private bool _windowResizing = false;
         private bool _addOurTabBeforeTick = false;
+        private PerScreen<ModOptionsPageState?> _savedPageState = new();
+        // For the map page workaround
+        private PerScreen<bool> _changeToOurTabAfterTick = new();
 
         public ModOptionsPageHandler(IModHelper helper, ModOptions options, bool showPersonalConfigButton)
         {
@@ -140,26 +145,42 @@ namespace UIInfoSuite2.Options
                 item.Dispose();
         }
 
-        private void OnButtonLeftClicked(object? sender, EventArgs e)
-        {
-            // Do not activate when an action is being remapped
-            if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.readyToClose() && gameMenu.currentTab != _modOptionsTabPageNumber.Value)
-            {
-                ChangeToOurTab(gameMenu);
-            }
-        }
-
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            // Handle right trigger to switch to our mod options page
-            if (Game1.activeClickableMenu is GameMenu gameMenu && (e.Button == SButton.RightTrigger) && !e.IsSuppressed())
+            if (Game1.activeClickableMenu is GameMenu gameMenu)
             {
-                if ((gameMenu.currentTab + 1 == _modOptionsTabPageNumber.Value) && gameMenu.readyToClose())
+                // Handle right trigger to switch to our mod options page
+                // NB The game does the correct thing for left trigger so we don't need to implement it. 
+                if (e.Button == SButton.RightTrigger && !e.IsSuppressed())
                 {
-                    ChangeToOurTab(gameMenu);
-                    _helper.Input.Suppress(SButton.RightTrigger);
+                    if ((gameMenu.currentTab + 1 == _modOptionsTabPageNumber.Value) && gameMenu.readyToClose())
+                    {
+                        ChangeToOurTab(gameMenu);
+                        _helper.Input.Suppress(SButton.RightTrigger);
+                    }
                 }
-                // NB: The game does the correct thing for left trigger so we don't need to implement it. 
+                
+                // Based on GameMenu.receiveLeftClick and Game1.updateActiveMenu
+                if ((e.Button == SButton.MouseLeft || e.Button == SButton.ControllerA) && !e.IsSuppressed())
+                {
+                    // Workaround when exiting the map page because it calls GameMenu.changeTab and fails
+                    if (gameMenu.currentTab == GameMenu.mapTab && gameMenu.lastOpenedNonMapTab == _modOptionsTabPageNumber.Value)
+                    {
+                        _changeToOurTabAfterTick.Value = true;
+                        gameMenu.lastOpenedNonMapTab = GameMenu.optionsTab;
+                        ModEntry.MonitorObject.Log($"{this.GetType().Name}: The map page is about to close and the menu will switch to our tab, applying workaround");
+                    }
+
+                    if (!gameMenu.invisible && !GameMenu.forcePreventClose)
+                    {
+                        if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(), Game1.getMouseY()) == true
+                            && gameMenu.currentTab != _modOptionsTabPageNumber.Value
+                            && gameMenu.readyToClose())
+                        {
+                            ChangeToOurTab(gameMenu);
+                        }
+                    }
+                }
             }
         }
 
@@ -176,14 +197,26 @@ namespace UIInfoSuite2.Options
                         EarlyOnMenuChanged(_lastMenu.Value, Game1.activeClickableMenu);
                         _lastMenu.Value = Game1.activeClickableMenu;
                     }
+                    
                 });
-                ModEntry.MonitorObject.Log($"{this.GetType().Name}: Our tab was added back to the game menu as the final step of the window resize workaround");
+                ModEntry.MonitorObject.Log($"{this.GetType().Name}: Our tab was added back as the final step of the window resize workaround");
             }
         }
 
         private void OnUpdateTicked(object? sender, EventArgs e)
         {
             var gameMenu = Game1.activeClickableMenu as GameMenu;
+
+            // The map was closed and the last opened tab was ours
+            if (_changeToOurTabAfterTick.Value)
+            {
+                _changeToOurTabAfterTick.Value = false;
+                if (gameMenu != null)
+                {
+                    ChangeToOurTab(gameMenu);
+                    ModEntry.MonitorObject.Log($"{this.GetType().Name}: Changed back to our tab");
+                }
+            }
 
             if (_lastMenu.Value != Game1.activeClickableMenu)
             {
@@ -211,9 +244,10 @@ namespace UIInfoSuite2.Options
                 }
                 if (_modOptionsPageButton.Value != null)
                 {
-                    _modOptionsPageButton.Value.OnLeftClicked -= OnButtonLeftClicked;
                     _modOptionsPageButton.Value = null;
                 }
+                _modOptionsTabPageNumber.Value = null;
+                _modOptionsTab.Value = null;
             }
 
             // Add to new menu
@@ -223,14 +257,23 @@ namespace UIInfoSuite2.Options
                 if (_modOptionsPage.Value == null)
                     _modOptionsPage.Value = new ModOptionsPage(_optionsElements, _helper.Events);
                 if (_modOptionsPageButton.Value == null)
-                    _modOptionsPageButton.Value = new ModOptionsPageButton(_helper.Events);
+                {
+                    _modOptionsPageButton.Value = new ModOptionsPageButton();
+                    _modOptionsPageButton.Value.xPositionOnScreen = GetButtonXPosition(newGameMenu);
+                }
                 
-                _modOptionsPageButton.Value.OnLeftClicked += OnButtonLeftClicked;
                 List<IClickableMenu> tabPages = newGameMenu.pages;
                 _modOptionsTabPageNumber.Value = tabPages.Count;
                 tabPages.Add(_modOptionsPage.Value);
 
-                // NB: For menu tabs, name is the "id" of the tab and label is the hover text.
+                // Load last mod options page state
+                if (_savedPageState.Value != null)
+                {
+                    _modOptionsPage.Value.LoadState(_savedPageState.Value);
+                    _savedPageState.Value = null;
+                }
+
+                // NB For menu tabs, name is the "id" of the tab and label is the hover text.
                 _modOptionsTab.Value = new ClickableComponent(
                     new Microsoft.Xna.Framework.Rectangle(
                         GetButtonXPosition(newGameMenu),
@@ -257,7 +300,7 @@ namespace UIInfoSuite2.Options
                 }
                 else
                 {
-                    ModEntry.MonitorObject.LogOnce($"{this.GetType().Name}: Did not find the ExitPage tab in the new GameMenu.tabs");
+                    ModEntry.MonitorObject.LogOnce($"{this.GetType().Name}: Did not find the ExitPage tab in the new GameMenu.tabs", LogLevel.Error);
                 }
             }
         }
@@ -308,6 +351,8 @@ namespace UIInfoSuite2.Options
             {
                 DrawButton(gameMenu);
 
+                Tools.DrawMouseCursor();
+
                 // Draw the game menu's hover text again so it displays above our tab
                 if (!gameMenu.hoverText.Equals(""))
                     IClickableMenu.drawHoverText(Game1.spriteBatch, gameMenu.hoverText, Game1.smallFont);
@@ -319,7 +364,7 @@ namespace UIInfoSuite2.Options
                     IClickableMenu.drawHoverText(Game1.spriteBatch, tooltip, Game1.smallFont);
 
                     if (!gameMenu.hoverText.Equals(""))
-                        ModEntry.MonitorObject.LogOnce($"{(this.GetType().Name)}: Both our mod options tab and the game are displaying hover text");
+                        ModEntry.MonitorObject.LogOnce($"{(this.GetType().Name)}: Both our mod options tab and the game are displaying hover text", LogLevel.Warn);
                 }
             }
         }
@@ -327,7 +372,25 @@ namespace UIInfoSuite2.Options
         private void OnWindowClientSizeChanged(object? sender, EventArgs e)
         {
             _windowResizing = true;
-            BeforeResizeWorkaround();
+            GameRunner.instance.ExecuteForInstances((Game1 instance) => {
+                if (Game1.activeClickableMenu is GameMenu gameMenu
+                    // NB SMAPI seems to use the game's instanceID as the screenID for PerScreen
+                    && gameMenu.currentTab == _modOptionsTabPageNumber.GetValueForScreen(instance.instanceId))
+                {
+                    // Temporarily change all open mod options pages to the game's options page
+                    // because the GameMenu is recreated when the window is resized, before we can add
+                    // our mod options page to GameMenu#pages.
+                    if (gameMenu.GetCurrentPage() is ModOptionsPage modOptionsPage)
+                    {
+                        _savedPageState.Value = new ModOptionsPageState();
+                        modOptionsPage.SaveState(_savedPageState.Value);
+                    }
+                    gameMenu.currentTab = GameMenu.optionsTab;
+                    _instancesWithOptionsPageOpen.Add(instance.instanceId);
+                }
+            });
+            if (_instancesWithOptionsPageOpen.Count > 0)
+                ModEntry.MonitorObject.Log($"{this.GetType().Name}: The window is being resized while our options page is opened, applying workaround");
         }
 
         // This seems to be called after Display.Rendered and Update.Ticking ie. between frames
@@ -336,7 +399,21 @@ namespace UIInfoSuite2.Options
             if (_windowResizing)
             {
                 _windowResizing = false;
-                AfterResizeWorkaround();
+                if (_instancesWithOptionsPageOpen.Count > 0)
+                {
+                    GameRunner.instance.ExecuteForInstances((Game1 instance) => {
+                        if (_instancesWithOptionsPageOpen.Remove(instance.instanceId))
+                        {
+                            if (Game1.activeClickableMenu is GameMenu gameMenu)
+                            {
+                                gameMenu.currentTab = (int) _modOptionsTabPageNumber.GetValueForScreen(instance.instanceId)!;
+                            }
+                        }
+                    });
+
+                    ModEntry.MonitorObject.Log($"{this.GetType().Name}: The window was resized, reverting to our tab");
+                    _addOurTabBeforeTick = true;
+                }
             }
         }
 
@@ -386,43 +463,6 @@ namespace UIInfoSuite2.Options
             button.draw(Game1.spriteBatch);
         }
 
-        private void BeforeResizeWorkaround()
-        {
-            GameRunner.instance.ExecuteForInstances((Game1 instance) => {
-                if (Game1.activeClickableMenu is GameMenu gameMenu
-                    // NB SMAPI seems to use the game's instanceID as the screenID for PerScreen
-                    && gameMenu.currentTab == _modOptionsTabPageNumber.GetValueForScreen(instance.instanceId))
-                {
-                    // Temporarily change all open mod options pages to the game's options page
-                    // because the GameMenu is recreated when the window is resized, before we can add
-                    // our mod options page to GameMenu#pages.
-                    gameMenu.currentTab = GameMenu.optionsTab;
-                    _instancesWithOptionsPageOpen.Add(instance.instanceId);
-                }
-            });
-            if (_instancesWithOptionsPageOpen.Count > 0)
-                ModEntry.MonitorObject.Log($"{this.GetType().Name}: The window is being resized while our mod options page is opened, applying workaround");
-        }
-
-        private void AfterResizeWorkaround()
-        {
-            if (_instancesWithOptionsPageOpen.Count > 0)
-            {
-                GameRunner.instance.ExecuteForInstances((Game1 instance) => {
-                    if (_instancesWithOptionsPageOpen.Remove(instance.instanceId))
-                    {
-                        if (Game1.activeClickableMenu is GameMenu gameMenu)
-                        {
-                            gameMenu.currentTab = (int) _modOptionsTabPageNumber.GetValueForScreen(instance.instanceId)!;
-                        }
-                    }
-                });
-
-                ModEntry.MonitorObject.Log($"{this.GetType().Name}: The window was resized, reverting to our tab");
-                _addOurTabBeforeTick = true;
-            }
-        }
-
         /// <summary>
         /// Tries hard to return a version string for the mod like "v2.2.9"
         /// 
@@ -447,5 +487,12 @@ namespace UIInfoSuite2.Options
 
             return $"(unknown version)";
         }
+    }
+
+    /// <summary>Data that is saved and restored when the the game menu is resized</summary>
+    internal class ModOptionsPageState
+    {
+        public int? currentIndex;
+        public int? currentComponent;
     }
 }

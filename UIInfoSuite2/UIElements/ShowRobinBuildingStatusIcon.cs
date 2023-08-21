@@ -103,11 +103,13 @@ namespace UIInfoSuite2.UIElements
                     if (b.daysOfConstructionLeft.Value > b.daysUntilUpgrade.Value)
                     {
                         hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), b.daysOfConstructionLeft.Value);
+                        return true;
                     }
                     else
                     {
                         // Add another translation string for this?
                         hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), b.daysUntilUpgrade.Value);
+                        return true;
                     }
                 }
                 else

@@ -90,7 +90,7 @@ namespace UIInfoSuite2.UIElements
         #endregion
 
         #region Logic
-        private int GetRemainingDaysForConstruction()
+        private bool GetRobinMessage(out string hoverText)
         {
             int remainingDays = Game1.player.daysUntilHouseUpgrade.Value;
 
@@ -99,27 +99,38 @@ namespace UIInfoSuite2.UIElements
                 Building b = Game1.getFarm().getBuildingUnderConstruction();
 
                 if (b is not null)
-                    return Math.Max(b.daysOfConstructionLeft.Value, b.daysUntilUpgrade.Value);
+                {
+                    if (b.daysOfConstructionLeft.Value > b.daysUntilUpgrade.Value)
+                    {
+                        hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), b.daysOfConstructionLeft.Value);
+                    }
+                    else
+                    {
+                        // Add another translation string for this?
+                        hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), b.daysUntilUpgrade.Value);
+                    }
+                }
+                else
+                {
+                    hoverText = String.Empty;
+                    return false;
+                }
             }
 
-            return remainingDays;
+            hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinHouseUpgradeStatus), remainingDays);
+            return true;
         }
 
         private void UpdateRobinBuindingStatusData()
         {
-            int remainingDays = GetRemainingDaysForConstruction();
-
-            if (remainingDays > 0)
+            if (GetRobinMessage(out _hoverText))
             {
                 _IsBuildingInProgress = true;
-                _hoverText = String.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), remainingDays);
-
                 FindRobinSpritesheet();
             }
             else
             {
                 _IsBuildingInProgress = false;
-                _hoverText = String.Empty;
             }
         }
 

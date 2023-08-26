@@ -173,7 +173,8 @@ namespace UIInfoSuite2.Options
 
                     if (!gameMenu.invisible && !GameMenu.forcePreventClose)
                     {
-                        if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(), Game1.getMouseY()) == true
+                        const bool uiScale = true;
+                        if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(uiScale), Game1.getMouseY(uiScale)) == true
                             && gameMenu.currentTab != _modOptionsTabPageNumber.Value
                             && gameMenu.readyToClose())
                         {

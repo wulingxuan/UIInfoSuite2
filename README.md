@@ -41,16 +41,40 @@ Compatibility is assured with:
 - Level Extender by DevinLematty (probably?)
 - Better Farm Animal Variety by Paritee
 
-# Collaborators (who make the project run right now!)
-
+# Current collaborators
 <table>
-    <tr>
-      <td align="center" valign="top"> <img src="https://github.com/drewhoener.png?size=80" alt="tqdv"/> <br /><sub><b>drewhoener</b></sub><br /> <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=drewhoener" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Adrewhoener" title="Reviewed Pull Requests">👀</a></td>
-      <td align="center" valign="top"> <img src="https://github.com/tqdv.png?size=80" alt="tqdv"/> <br /><sub><b>tqdv</b></sub><br /> <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=tqdv" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Atqdv" title="Reviewed Pull Requests">👀</a></td>
-    </tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/drewhoener">
+            <img src="https://avatars.githubusercontent.com/u/6218989?v=4" width="100;" alt="drewhoener"/>
+            <br />
+            <sub><b>Drew Hoener</b></sub>
+            <br />
+            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=drewhoener" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Adrewhoener" title="Reviewed Pull Requests">👀</a></td>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Annosz">
+            <img src="https://avatars.githubusercontent.com/u/10620868?v=4" width="100;" alt="Annosz"/>
+            <br />
+            <sub><b>Ádám Tóth</b></sub>
+            <br />
+            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=Annosz" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3AAnnosz" title="Reviewed Pull Requests">👀</a></td>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/tqdv">
+            <img src="https://avatars.githubusercontent.com/u/11901480?v=4" width="100;" alt="tqdv"/>
+            <br />
+            <sub><b>Tilwa Qendov</b></sub>
+            <br />
+            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=tqdv" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Atqdv" title="Reviewed Pull Requests">👀</a></td>
+        </a>
+    </td></tr>
 </table>
 
 ## All contributors
+
 <a href="https://github.com/Annosz/UIInfoSuite2/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Annosz/UIInfoSuite2" />
 </a>

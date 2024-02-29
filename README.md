@@ -5,15 +5,6 @@ _Do **NOT** download the Source code (zip) or Source code (tar.gz). Also, do **N
 
 **If you like the mod, you can help the development by [gifting me a coffee](https://www.buymeacoffee.com/Annosz). Actually, as I'm from a corrupt Eastern European country, this is worth more like a whole dinner for me - any donation is much appreciated.**
 
-# Collaborators
-<!-- readme: collaborators -start -->
-<!-- readme: collaborators -end -->
-
-# Contributors
-
-<!-- readme: contributors -start -->
-<!-- readme: contributors -end -->
-
 # UI Info Suite 2
 _Ongoing maintenance for the original UI Info Suite mod for Stardew Valley._
 
@@ -49,6 +40,20 @@ Compatibility is assured with:
 - Bigger Backpack by spacechase0
 - Level Extender by DevinLematty (probably?)
 - Better Farm Animal Variety by Paritee
+
+# Collaborators (who make the project run right now!)
+
+<table>
+    <tr>
+      <td align="center" valign="top"> <img src="https://github.com/drewhoener.png?size=80" alt="tqdv"/> <br /><sub><b>drewhoener</b></sub><br /> <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=drewhoener" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Adrewhoener" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top"> <img src="https://github.com/tqdv.png?size=80" alt="tqdv"/> <br /><sub><b>tqdv</b></sub><br /> <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=tqdv" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Atqdv" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
+</table>
+
+## All contributors
+<a href="https://github.com/Annosz/UIInfoSuite2/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Annosz/UIInfoSuite2" />
+</a>
 
 # Translating UI Info Suite 2
 The mod can be translated into any language supported by the game, and SMAPI will automatically

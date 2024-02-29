@@ -5,11 +5,12 @@ _Do **NOT** download the Source code (zip) or Source code (tar.gz). Also, do **N
 
 **If you like the mod, you can help the development by [gifting me a coffee](https://www.buymeacoffee.com/Annosz). Actually, as I'm from a corrupt Eastern European country, this is worth more like a whole dinner for me - any donation is much appreciated.**
 
-# UI Info Suite 2
-_Ongoing maintenance for the original UI Info Suite mod for Stardew Valley._
-
+# Collaborators
 <!-- readme: collaborators -start -->
 <!-- readme: collaborators -end -->
+
+# UI Info Suite 2
+_Ongoing maintenance for the original UI Info Suite mod for Stardew Valley._
 
 UI Info Suite provides helpful information about things around you designed to help you be aware of what's going on without feeling like you're cheating.
 

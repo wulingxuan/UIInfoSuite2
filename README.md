@@ -9,6 +9,11 @@ _Do **NOT** download the Source code (zip) or Source code (tar.gz). Also, do **N
 <!-- readme: collaborators -start -->
 <!-- readme: collaborators -end -->
 
+# Contributors
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
+
 # UI Info Suite 2
 _Ongoing maintenance for the original UI Info Suite mod for Stardew Valley._
 

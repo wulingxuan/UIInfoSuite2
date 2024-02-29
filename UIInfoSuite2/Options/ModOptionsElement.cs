@@ -74,5 +74,11 @@ namespace UIInfoSuite2.Options
                     0.1f);
             }
         }
+
+        public virtual Point? GetRelativeSnapPoint(Rectangle slotBounds)
+        {
+            // Positioning taken from OptionsPage.snapCursorToCurrentSnappedComponent
+            return new Point(48, slotBounds.Height / 2 - 12);
+        }
     }
 }

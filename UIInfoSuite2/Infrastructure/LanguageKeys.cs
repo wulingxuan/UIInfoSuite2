@@ -2,6 +2,7 @@
 {
     public static class LanguageKeys
     {
+        public const string OptionsTabTooltip = "OptionsTabTooltip";
         public const string Days = "Days";
         public const string DaysToMature = "DaysToMature";
         public const string Hours = "Hours";

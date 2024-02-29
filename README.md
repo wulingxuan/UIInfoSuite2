@@ -7,6 +7,30 @@ _Do **NOT** download the Source code (zip) or Source code (tar.gz). Also, do **N
 
 # Collaborators
 <!-- readme: collaborators -start -->
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/drewhoener">
+            <img src="https://avatars.githubusercontent.com/u/6218989?v=4" width="100;" alt="drewhoener"/>
+            <br />
+            <sub><b>Drew Hoener</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Annosz">
+            <img src="https://avatars.githubusercontent.com/u/10620868?v=4" width="100;" alt="Annosz"/>
+            <br />
+            <sub><b>Tóth Ádám</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/tqdv">
+            <img src="https://avatars.githubusercontent.com/u/11901480?v=4" width="100;" alt="tqdv"/>
+            <br />
+            <sub><b>Tilwa Qendov</b></sub>
+        </a>
+    </td></tr>
+</table>
 <!-- readme: collaborators -end -->
 
 # UI Info Suite 2

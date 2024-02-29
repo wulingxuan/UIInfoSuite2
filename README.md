@@ -45,31 +45,31 @@ Compatibility is assured with:
 <table>
 <tr>
     <td align="center">
-        <a href="https://github.com/drewhoener">
-            <img src="https://avatars.githubusercontent.com/u/6218989?v=4" width="100;" alt="drewhoener"/>
-            <br />
-            <sub><b>Drew Hoener</b></sub>
-            <br />
-            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=drewhoener" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Adrewhoener" title="Reviewed Pull Requests">👀</a></td>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/Annosz">
             <img src="https://avatars.githubusercontent.com/u/10620868?v=4" width="100;" alt="Annosz"/>
-            <br />
-            <sub><b>Ádám Tóth</b></sub>
-            <br />
-            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=Annosz" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3AAnnosz" title="Reviewed Pull Requests">👀</a></td>
         </a>
+        <br />
+        <sub><b>Ádám Tóth</b></sub>
+        <br />
+        <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=Annosz" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3AAnnosz" title="Reviewed Pull Requests">👀</a></td>
+    </td>
+    <td align="center">
+        <a href="https://github.com/drewhoener">
+            <img src="https://avatars.githubusercontent.com/u/6218989?v=4" width="100;" alt="drewhoener"/>
+        </a>
+        <br />
+        <sub><b>Drew Hoener</b></sub>
+        <br />
+        <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=drewhoener" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Adrewhoener" title="Reviewed Pull Requests">👀</a></td>
     </td>
     <td align="center">
         <a href="https://github.com/tqdv">
             <img src="https://avatars.githubusercontent.com/u/11901480?v=4" width="100;" alt="tqdv"/>
-            <br />
-            <sub><b>Tilwa Qendov</b></sub>
-            <br />
-            <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=tqdv" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Atqdv" title="Reviewed Pull Requests">👀</a></td>
         </a>
+        <br />
+        <sub><b>Tilwa Qendov</b></sub>
+        <br />
+        <a href="https://github.com/Annosz/UIInfoSuite2/commits?author=tqdv" title="Code">💻</a> <a href="https://github.com/Annosz/UIInfoSuite2/pulls?q=is%3Apr+reviewed-by%3Atqdv" title="Reviewed Pull Requests">👀</a></td>
     </td></tr>
 </table>
 

@@ -15,6 +15,14 @@ namespace UIInfoSuite2.UIElements
 {
   internal class ShowQueenOfSauceIcon : IDisposable
   {
+    private class QueenOfSauceTV : TV
+    {
+      public string[] GetWeeklyRecipe()
+      {
+        return base.getWeeklyRecipe();
+      }
+    }
+
   #region Properties
     private readonly Dictionary<string, string> _recipesByDescription = new();
     private Dictionary<string, string> _recipes = new();
@@ -96,47 +104,6 @@ namespace UIInfoSuite2.UIElements
           );
           _icon.Value.draw(Game1.spriteBatch);
         }
-
-        //if (_drawDishOfDayIcon)
-        //{
-        //    Point iconLocation = IconHandler.Handler.GetNewIconPosition();
-        //    float scale = 2.9f;
-
-        //    Game1.spriteBatch.Draw(
-        //        Game1.objectSpriteSheet,
-        //        new Vector2(iconLocation.X, iconLocation.Y),
-        //        new Rectangle(306, 291, 14, 14),
-        //        Color.White,
-        //        0,
-        //        Vector2.Zero,
-        //        scale,
-        //        SpriteEffects.None,
-        //        1f);
-
-        //    ClickableTextureComponent texture =
-        //        new ClickableTextureComponent(
-        //            _gus.Name,
-        //            new Rectangle(
-        //                iconLocation.X - 7,
-        //                iconLocation.Y - 2,
-        //                (int)(16.0 * scale),
-        //                (int)(16.0 * scale)),
-        //            null,
-        //            _gus.Name,
-        //            _gus.Sprite.Texture,
-        //            _gus.GetHeadShot(),
-        //            2f);
-
-        //    texture.draw(Game1.spriteBatch);
-
-        //    if (texture.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
-        //    {
-        //        IClickableMenu.drawHoverText(
-        //            Game1.spriteBatch,
-        //            "Gus is selling " + Game1.dishOfTheDay.DisplayName + " recipe today!",
-        //            Game1.dialogueFont);
-        //    }
-        //}
       }
     }
 
@@ -175,8 +142,8 @@ namespace UIInfoSuite2.UIElements
     private void CheckForNewRecipe()
     {
       int recipiesKnownBeforeTvCall = Game1.player.cookingRecipes.Count();
-      var dialogue = typeof(TV).GetMethod("getWeeklyRecipe", BindingFlags.Instance | BindingFlags.NonPublic)
-                               .Invoke(new TV(), null) as string[];
+      string[] dialogue = new QueenOfSauceTV().GetWeeklyRecipe();
+      // TODO fix nullability reference
       _todaysRecipe = new CraftingRecipe(_recipesByDescription.SafeGet(dialogue[0]), true);
 
       if (Game1.player.cookingRecipes.Count() > recipiesKnownBeforeTvCall)
@@ -188,23 +155,6 @@ namespace UIInfoSuite2.UIElements
                                     Game1.stats.DaysPlayed > 5 &&
                                     !Game1.player.knowsRecipe(_todaysRecipe.name);
     }
-
-    //private void FindGus()
-    //{
-    //    foreach (var location in Game1.locations)
-    //    {
-    //        foreach (var npc in location.characters)
-    //        {
-    //            if (npc.Name == "Gus")
-    //            {
-    //                _gus = npc;
-    //                break;
-    //            }
-    //        }
-    //        if (_gus != null)
-    //            break;
-    //    }
-    //}
   #endregion
   }
 }

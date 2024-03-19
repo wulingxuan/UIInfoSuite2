@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -93,21 +94,24 @@ namespace UIInfoSuite2.UIElements
 
       if (remainingDays <= 0)
       {
-        Building b = Game1.getFarm().getBuildingUnderConstruction();
+        Building? building = Game1.getFarm().buildings.FirstOrDefault(b => b.isUnderConstruction(false));
 
-        if (b is not null)
+        if (building is not null)
         {
-          if (b.daysOfConstructionLeft.Value > b.daysUntilUpgrade.Value)
+          if (building.daysOfConstructionLeft.Value > building.daysUntilUpgrade.Value)
           {
             hoverText = string.Format(
               _helper.SafeGetString(LanguageKeys.RobinBuildingStatus),
-              b.daysOfConstructionLeft.Value
+              building.daysOfConstructionLeft.Value
             );
             return true;
           }
 
           // Add another translation string for this?
-          hoverText = string.Format(_helper.SafeGetString(LanguageKeys.RobinBuildingStatus), b.daysUntilUpgrade.Value);
+          hoverText = string.Format(
+            _helper.SafeGetString(LanguageKeys.RobinBuildingStatus),
+            building.daysUntilUpgrade.Value
+          );
           return true;
         }
 

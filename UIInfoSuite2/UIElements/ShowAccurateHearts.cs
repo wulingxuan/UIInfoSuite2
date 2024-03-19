@@ -10,14 +10,18 @@ namespace UIInfoSuite2.UIElements
   internal class ShowAccurateHearts : IDisposable
   {
   #region Properties
-    private string[] _friendNames;
-    private SocialPage _socialPage;
+    private SocialPage? _socialPage;
     private readonly IModEvents _events;
 
+    // @formatter:off
     private readonly int[][] _numArray =
     {
-      new[] { 1, 1, 0, 1, 1 }, new[] { 1, 1, 1, 1, 1 }, new[] { 0, 1, 1, 1, 0 }, new[] { 0, 0, 1, 0, 0 }
+      new[] { 1, 1, 0, 1, 1 },
+      new[] { 1, 1, 1, 1, 1 },
+      new[] { 0, 1, 1, 1, 0 },
+      new[] { 0, 0, 1, 0, 0 }
     };
+    // @formatter:on
   #endregion
 
   #region Lifecycle
@@ -49,7 +53,7 @@ namespace UIInfoSuite2.UIElements
     {
       if (_socialPage == null)
       {
-        ExtendMenuIfNeeded();
+        GetSocialPage();
         return;
       }
 
@@ -64,12 +68,12 @@ namespace UIInfoSuite2.UIElements
 
     private void OnMenuChanged(object sender, MenuChangedEventArgs e)
     {
-      ExtendMenuIfNeeded();
+      GetSocialPage();
     }
   #endregion
 
   #region Logic
-    private void ExtendMenuIfNeeded()
+    private void GetSocialPage()
     {
       if (Game1.activeClickableMenu is GameMenu gameMenu)
       {
@@ -78,7 +82,6 @@ namespace UIInfoSuite2.UIElements
           if (menu is SocialPage page)
           {
             _socialPage = page;
-            _friendNames = _socialPage.names.Select(name => name.ToString()).ToArray();
             break;
           }
         }
@@ -87,17 +90,24 @@ namespace UIInfoSuite2.UIElements
 
     private void DrawHeartFills()
     {
-      var slotPosition = (int)typeof(SocialPage)
-                              .GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)
-                              .GetValue(_socialPage);
+      if (_socialPage == null)
+      {
+        return;
+      }
+
+
+      var slotPosition =
+        (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
+          _socialPage
+        )!;
       var yOffset = 0;
 
-      for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
+      for (int i = slotPosition; i < slotPosition + 5 && i < _socialPage.SocialEntries.Count; ++i)
       {
-        if (Game1.player.friendshipData.TryGetValue(_friendNames[i], out Friendship friendshipValues) &&
-            friendshipValues.Points > 0 &&
-            friendshipValues.Points <
-            Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(_friendNames[i])) * 250)
+        string internalName = _socialPage.SocialEntries[i].InternalName;
+        if (Game1.player.friendshipData.TryGetValue(internalName, out Friendship friendshipValues)
+            && friendshipValues.Points > 0
+            && friendshipValues.Points < Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(internalName)) * 250)
         {
           int pointsToNextHeart = friendshipValues.Points % 250;
           int numHearts = friendshipValues.Points / 250;

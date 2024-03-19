@@ -9,6 +9,8 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Characters;
+using StardewValley.GameData.FarmAnimals;
+using StardewValley.ItemTypeDefinitions;
 using StardewValley.Locations;
 using StardewValley.Network;
 
@@ -113,11 +115,12 @@ namespace UIInfoSuite2.UIElements
       {
         foreach (KeyValuePair<long, FarmAnimal> animal in animalsInCurrentLocation.Pairs)
         {
-          if (animal.Value.harvestType.Value != FarmAnimal.layHarvestType &&
+          FarmAnimalHarvestType? harvestType = animal.Value.GetHarvestType();
+          if (harvestType != FarmAnimalHarvestType.DropOvernight &&
               !animal.Value.IsEmoting &&
-              animal.Value.currentProduce.Value != 430 &&
-              animal.Value.currentProduce.Value > 0 &&
-              animal.Value.age.Value >= animal.Value.ageWhenMature.Value)
+              animal.Value.currentProduce.Value != "430" && // 430 is truffle
+              animal.Value.currentProduce.Value != null &&
+              animal.Value.age.Value >= animal.Value.GetAnimalData().DaysToMature)
           {
             Vector2 positionAboveAnimal = GetPetPositionAboveAnimal(animal.Value);
             positionAboveAnimal.Y += (float)(Math.Sin(
@@ -142,9 +145,11 @@ namespace UIInfoSuite2.UIElements
               1f
             );
 
-            Rectangle sourceRectangle = GameLocation.getSourceRectForObject(animal.Value.currentProduce.Value);
+            string produceItemId = animal.Value.currentProduce.Value;
+            ParsedItemData? produceData = ItemRegistry.GetData(produceItemId);
+            Rectangle sourceRectangle = produceData.GetSourceRect();
             Game1.spriteBatch.Draw(
-              Game1.objectSpriteSheet,
+              produceData.GetTexture(),
               Utility.ModifyCoordinatesForUIScale(new Vector2(positionAboveAnimal.X + 28f, positionAboveAnimal.Y + 8f)),
               sourceRectangle,
               Color.White * 0.9f,

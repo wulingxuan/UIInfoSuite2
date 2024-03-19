@@ -8,21 +8,20 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Quests;
+using StardewValley.WorldMaps;
 using UIInfoSuite2.Infrastructure;
 using UIInfoSuite2.Infrastructure.Extensions;
 using UIInfoSuite2.Options;
-using xTile;
 
 namespace UIInfoSuite2.UIElements
 {
   internal class LocationOfTownsfolk : IDisposable
   {
   #region Properties
-    private SocialPage _socialPage;
-    private string[] _friendNames;
+    private SocialPage _socialPage = null!;
+    private string[] _friendNames = null!;
     private readonly List<NPC> _townsfolk = new();
     private readonly List<OptionsCheckbox> _checkboxes = new();
 
@@ -31,63 +30,6 @@ namespace UIInfoSuite2.UIElements
 
     private const int SocialPanelWidth = 190;
     private const int SocialPanelXOffset = 160;
-
-    private static readonly Dictionary<string, KeyValuePair<int, int>> _mapLocations = new()
-    {
-      { "HarveyRoom", new KeyValuePair<int, int>(677, 304) },
-      { "BathHouse_Pool", new KeyValuePair<int, int>(576, 60) },
-      { "WizardHouseBasement", new KeyValuePair<int, int>(196, 352) },
-      { "BugLand", new KeyValuePair<int, int>(0, 0) },
-      { "Desert", new KeyValuePair<int, int>(75, 40) },
-      { "Cellar", new KeyValuePair<int, int>(470, 260) },
-      { "JojaMart", new KeyValuePair<int, int>(872, 280) },
-      { "LeoTreeHouse", new KeyValuePair<int, int>(744, 128) },
-      { "Tent", new KeyValuePair<int, int>(784, 128) },
-      { "HaleyHouse", new KeyValuePair<int, int>(652, 408) },
-      { "Hospital", new KeyValuePair<int, int>(677, 304) },
-      { "FarmHouse", new KeyValuePair<int, int>(470, 260) },
-      { "Farm", new KeyValuePair<int, int>(470, 260) },
-      { "ScienceHouse", new KeyValuePair<int, int>(732, 148) },
-      { "ManorHouse", new KeyValuePair<int, int>(768, 395) },
-      { "AdventureGuild", new KeyValuePair<int, int>(0, 0) },
-      { "SeedShop", new KeyValuePair<int, int>(696, 296) },
-      { "Blacksmith", new KeyValuePair<int, int>(852, 388) },
-      { "JoshHouse", new KeyValuePair<int, int>(740, 320) },
-      { "SandyHouse", new KeyValuePair<int, int>(40, 115) },
-      { "Tunnel", new KeyValuePair<int, int>(0, 0) },
-      { "CommunityCenter", new KeyValuePair<int, int>(692, 204) },
-      { "Backwoods", new KeyValuePair<int, int>(460, 156) },
-      { "ElliottHouse", new KeyValuePair<int, int>(826, 550) },
-      { "SebastianRoom", new KeyValuePair<int, int>(732, 148) },
-      { "BathHouse_Entry", new KeyValuePair<int, int>(576, 60) },
-      { "Greenhouse", new KeyValuePair<int, int>(370, 270) },
-      { "Sewer", new KeyValuePair<int, int>(380, 596) },
-      { "WizardHouse", new KeyValuePair<int, int>(196, 352) },
-      { "Trailer", new KeyValuePair<int, int>(780, 360) },
-      { "Trailer_Big", new KeyValuePair<int, int>(780, 360) },
-      { "Forest", new KeyValuePair<int, int>(80, 272) },
-      { "Woods", new KeyValuePair<int, int>(100, 272) },
-      { "WitchSwamp", new KeyValuePair<int, int>(0, 0) },
-      { "ArchaeologyHouse", new KeyValuePair<int, int>(892, 416) },
-      { "FishShop", new KeyValuePair<int, int>(844, 608) },
-      { "Saloon", new KeyValuePair<int, int>(714, 354) },
-      { "LeahHouse", new KeyValuePair<int, int>(452, 436) },
-      { "Town", new KeyValuePair<int, int>(680, 360) },
-      { "Mountain", new KeyValuePair<int, int>(762, 154) },
-      { "BusStop", new KeyValuePair<int, int>(516, 224) },
-      { "Railroad", new KeyValuePair<int, int>(644, 64) },
-      { "SkullCave", new KeyValuePair<int, int>(0, 0) },
-      { "BathHouse_WomensLocker", new KeyValuePair<int, int>(576, 60) },
-      { "Beach", new KeyValuePair<int, int>(790, 550) },
-      { "BathHouse_MensLocker", new KeyValuePair<int, int>(576, 60) },
-      { "Mine", new KeyValuePair<int, int>(880, 100) },
-      { "WitchHut", new KeyValuePair<int, int>(0, 0) },
-      { "AnimalShop", new KeyValuePair<int, int>(420, 392) },
-      { "SamHouse", new KeyValuePair<int, int>(612, 396) },
-      { "WitchWarpCave", new KeyValuePair<int, int>(0, 0) },
-      { "Club", new KeyValuePair<int, int>(60, 92) },
-      { "Sunroom", new KeyValuePair<int, int>(705, 304) }
-    };
   #endregion
 
   #region Lifecycle
@@ -123,37 +65,37 @@ namespace UIInfoSuite2.UIElements
   #endregion
 
   #region Event subscriptions
-    private void OnMenuChanged(object sender, MenuChangedEventArgs e)
+    private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
     {
       InitializeProperties();
     }
 
-    private void OnButtonPressed_ForSocialPage(object sender, ButtonPressedEventArgs e)
+    private void OnButtonPressed_ForSocialPage(object? sender, ButtonPressedEventArgs e)
     {
       if (Game1.activeClickableMenu is GameMenu &&
-          (e.Button == SButton.MouseLeft || e.Button == SButton.ControllerA || e.Button == SButton.ControllerX))
+          e.Button is SButton.MouseLeft or SButton.ControllerA or SButton.ControllerX)
       {
         CheckSelectedBox(e);
       }
     }
 
-    private void OnRenderedActiveMenu_DrawSocialPageOptions(object sender, RenderedActiveMenuEventArgs e)
+    private void OnRenderedActiveMenu_DrawSocialPageOptions(object? sender, RenderedActiveMenuEventArgs e)
     {
-      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == 2)
+      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == GameMenu.socialTab)
       {
         DrawSocialPageOptions();
       }
     }
 
-    private void OnRenderedActiveMenu_DrawNPCLocationsOnMap(object sender, RenderedActiveMenuEventArgs e)
+    private void OnRenderedActiveMenu_DrawNPCLocationsOnMap(object? sender, RenderedActiveMenuEventArgs e)
     {
-      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == 3)
+      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == GameMenu.mapTab)
       {
         DrawNPCLocationsOnMap(gameMenu);
       }
     }
 
-    private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
+    private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
       if (!e.IsOneSecond || (Context.IsSplitScreen && Context.ScreenId != 0))
       {
@@ -185,7 +127,7 @@ namespace UIInfoSuite2.UIElements
           if (menu is SocialPage socialPage)
           {
             _socialPage = socialPage;
-            _friendNames = _socialPage.names.Select(name => name.ToString()).ToArray();
+            _friendNames = socialPage.GetAllNpcs().Select(n => n.Name).ToArray();
             break;
           }
         }
@@ -215,9 +157,10 @@ namespace UIInfoSuite2.UIElements
 
     private void CheckSelectedBox(ButtonPressedEventArgs e)
     {
-      var slotPosition = (int)typeof(SocialPage)
-                              .GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)
-                              .GetValue(_socialPage);
+      var slotPosition =
+        (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
+          _socialPage
+        )!;
 
       for (int i = slotPosition; i < slotPosition + 5; ++i)
       {
@@ -252,9 +195,10 @@ namespace UIInfoSuite2.UIElements
         true
       );
 
-      var slotPosition = (int)typeof(SocialPage)
-                              .GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)
-                              .GetValue(_socialPage);
+      var slotPosition =
+        (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
+          _socialPage
+        )!;
       var yOffset = 0;
 
       for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
@@ -343,39 +287,44 @@ namespace UIInfoSuite2.UIElements
       //The cursor needs to show up in front of the character faces
       Tools.DrawMouseCursor();
 
-      var hoverText = (string)typeof(MapPage)
-                              .GetField("hoverText", BindingFlags.Instance | BindingFlags.NonPublic)
-                              .GetValue(gameMenu.pages[gameMenu.currentTab]);
-
+      string? hoverText = ((MapPage)gameMenu.pages[gameMenu.currentTab]).hoverText;
       IClickableMenu.drawHoverText(Game1.spriteBatch, hoverText, Game1.smallFont);
     }
 
     private static void DrawNPC(NPC character, List<string> namesToShow)
     {
-      KeyValuePair<int, int> location = GetMapCoordinatesForNPC(character);
+      // Compare with the game code - MapPage.drawMiniPortraits
+
+      Vector2?
+        location = GetMapCoordinatesForNPC(
+          character
+        ); // location is the absolute position or null if the npc is not on the map
+      if (location is null)
+      {
+        return;
+      }
 
       Rectangle headShot = character.GetHeadShot();
-      int xBase = Game1.activeClickableMenu.xPositionOnScreen - 158;
-      int yBase = Game1.activeClickableMenu.yPositionOnScreen - 40;
-
-      int x = xBase + location.Key;
-      int y = yBase + location.Value;
+      MapAreaPosition? mapPosition =
+        WorldMapManager.GetPositionData(
+          Game1.player.currentLocation,
+          new Point((int)location.Value.X, (int)location.Value.Y)
+        ) ??
+        WorldMapManager.GetPositionData(Game1.getFarm(), Point.Zero);
+      MapRegion? mapRegion = mapPosition.Region;
+      Rectangle mapBounds = mapRegion.GetMapPixelBounds();
+      var offsetLocation = new Vector2(
+        location.Value.X + mapBounds.X - headShot.Width,
+        location.Value.Y + mapBounds.Y - headShot.Height
+      );
+      // NOTE!  This is the same as the game code, except that where we have 'headShot.Width', the game code has a constant 32.  I think that's
+      //  because the player face they draw is 32x32.  So we're keeping to the spirit.
 
       Color color = character.CurrentDialogue.Count <= 0 ? Color.Gray : Color.White;
-      var textureComponent = new ClickableTextureComponent(
-        character.Name,
-        new Rectangle(x, y, 0, 0),
-        null,
-        character.Name,
-        character.Sprite.Texture,
-        headShot,
-        2.3f
-      );
-
       var headShotScale = 2f;
       Game1.spriteBatch.Draw(
         character.Sprite.Texture,
-        new Vector2(x, y),
+        offsetLocation,
         headShot,
         color,
         0.0f,
@@ -387,49 +336,43 @@ namespace UIInfoSuite2.UIElements
 
       int mouseX = Game1.getMouseX();
       int mouseY = Game1.getMouseY();
-      if (mouseX >= x &&
-          mouseX <= x + headShot.Width * headShotScale &&
-          mouseY >= y &&
-          mouseY <= y + headShot.Height * headShotScale)
+      if (mouseX >= offsetLocation.X &&
+          mouseX - offsetLocation.X <= headShot.Width * headShotScale &&
+          mouseY >= offsetLocation.Y &&
+          mouseY - offsetLocation.Y <= headShot.Height * headShotScale)
       {
         namesToShow.Add(character.displayName);
       }
 
-      DrawQuestsForNPC(character, x, y);
+      DrawQuestsForNPC(character, (int)offsetLocation.X, (int)offsetLocation.Y);
     }
 
-    private static KeyValuePair<int, int> GetMapCoordinatesForNPC(NPC character)
+    private static Vector2? GetMapCoordinatesForNPC(NPC character)
     {
-      string locationName = character.currentLocation?.Name ?? character.DefaultMap;
+      var playerNormalizedTile = new Point(
+        Math.Max(0, Game1.player.TilePoint.X),
+        Math.Max(0, Game1.player.TilePoint.Y)
+      );
+      MapAreaPosition playerMapAreaPosition =
+        WorldMapManager.GetPositionData(Game1.player.currentLocation, playerNormalizedTile) ??
+        WorldMapManager.GetPositionData(Game1.getFarm(), Point.Zero);
+      // ^^ Regarding that ?? clause...  If the player is in the farmhouse or barn or any building on the farm, GetPositionData is
+      //  going to return null.  Thus the fallback to pretending the player is on the farm.  However, it seems to me that
+      //  Game1.player.currentLocation.GetParentLocation() would be the safer long-term bet.  But rule number 1 of modding is this:
+      //  the game code is always right, even when it's wrong.
 
-      // Ginger Island
-      if (character.currentLocation is IslandLocation)
+      var characterNormalizedTile = new Point(Math.Max(0, character.TilePoint.X), Math.Max(0, character.TilePoint.Y));
+      MapAreaPosition characterMapAreaPosition =
+        WorldMapManager.GetPositionData(character.currentLocation, characterNormalizedTile);
+
+      if (playerMapAreaPosition != null &&
+          characterMapAreaPosition != null &&
+          !(characterMapAreaPosition.Region.Id != playerMapAreaPosition.Region.Id))
       {
-        return new KeyValuePair<int, int>(1104, 658);
+        return characterMapAreaPosition.GetMapPixelPosition(character.currentLocation, characterNormalizedTile);
       }
 
-      // Scale Town and Forest
-      if (locationName == "Town" || locationName == "Forest")
-      {
-        int xStart = locationName == "Town" ? 595 : 183;
-        int yStart = locationName == "Town" ? 163 : 378;
-        int areaWidth = locationName == "Town" ? 345 : 319;
-        int areaHeight = locationName == "Town" ? 330 : 261;
-
-        Map map = character.currentLocation.Map;
-
-        float xScale = areaWidth / (float)map.DisplayWidth;
-        float yScale = areaHeight / (float)map.DisplayHeight;
-
-        float scaledX = character.position.X * xScale;
-        float scaledY = character.position.Y * yScale;
-        int xPos = (int)scaledX + xStart;
-        int yPos = (int)scaledY + yStart;
-        return new KeyValuePair<int, int>(xPos, yPos);
-      }
-
-      // Other known locations
-      return _mapLocations.SafeGet(locationName, new KeyValuePair<int, int>(0, 0));
+      return null;
     }
 
     private static void DrawQuestsForNPC(NPC character, int x, int y)
@@ -438,24 +381,10 @@ namespace UIInfoSuite2.UIElements
                  q => q.accepted.Value && q.dailyQuest.Value && !q.completed.Value
                ))
       {
-        var isQuestTarget = false;
-        switch (quest.questType.Value)
-        {
-          case 3:
-            isQuestTarget = (quest as ItemDeliveryQuest).target.Value == character.Name;
-            break;
-          case 4:
-            isQuestTarget = (quest as SlayMonsterQuest).target.Value == character.Name;
-            break;
-          case 7:
-            isQuestTarget = (quest as FishingQuest).target.Value == character.Name;
-            break;
-          case 10:
-            isQuestTarget = (quest as ResourceCollectionQuest).target.Value == character.Name;
-            break;
-        }
-
-        if (isQuestTarget)
+        if ((quest is ItemDeliveryQuest idq && idq.target.Value == character.Name) ||
+            (quest is SlayMonsterQuest smq && smq.target.Value == character.Name) ||
+            (quest is FishingQuest fq && fq.target.Value == character.Name) ||
+            (quest is ResourceCollectionQuest rq && rq.target.Value == character.Name))
         {
           Game1.spriteBatch.Draw(
             Game1.mouseCursors,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
@@ -22,7 +23,7 @@ namespace UIInfoSuite2.UIElements
     private readonly PerScreen<Object> _currentTile = new();
     private readonly PerScreen<Building> _currentTileBuilding = new();
     private readonly IModHelper _helper;
-    private readonly Dictionary<int, string> _indexOfCropNames = new();
+    private readonly Dictionary<string, string> _indexOfCropNames = new();
 
     private readonly Dictionary<string, string> _indexOfDgaCropNames = new();
     private readonly PerScreen<TerrainFeature> _terrain = new();
@@ -70,9 +71,9 @@ namespace UIInfoSuite2.UIElements
 
       Vector2 tile = Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0 ? gamepadTile : mouseTile;
 
-      if (Game1.currentLocation is BuildableGameLocation buildableLocation)
+      if (Game1.currentLocation.IsBuildableLocation())
       {
-        _currentTileBuilding.Value = buildableLocation.getBuildingAt(tile);
+        _currentTileBuilding.Value = Game1.currentLocation.getBuildingAt(tile);
       }
 
       if (Game1.currentLocation != null)
@@ -126,25 +127,35 @@ namespace UIInfoSuite2.UIElements
       int overrideY = -1;
 
       // draw hover tooltip
+      var inputKey = 0;
+      // TODO1.6 <= The tooltip for Mill says:
+      //     The Mill class is only used to preserve data from old save files. All mills were converted into plain Building instances based on the rules in Data/Buildings.
+      //     The input and output items are now stored in Building.buildingChests with the 'Input' and 'Output' keys respectively.
+      //   Perhaps this was written when the 'buildingChests' property was a dictionary.  Now it's a list, and there's no property on Chest or ChestData
+      //   that indicates which chest is the input and which is the output...  I must be missing something.
+      // if (currentTileBuilding != null && currentTileBuilding is Mill millBuilding && millBuilding.input.Value != null && !millBuilding.input.Value.isEmpty())
       if (currentTileBuilding != null &&
-          currentTileBuilding is Mill millBuilding &&
-          millBuilding.input.Value != null &&
-          !millBuilding.input.Value.isEmpty())
+          currentTileBuilding.buildingChests.Count > inputKey &&
+          !currentTileBuilding.buildingChests[inputKey].isEmpty())
       {
         var wheatCount = 0;
         var beetCount = 0;
+        var unmilledriceCount = 0;
 
-        foreach (Item item in millBuilding.input.Value.items)
+        foreach (Item item in currentTileBuilding.buildingChests[inputKey].Items)
         {
           if (item != null && !string.IsNullOrEmpty(item.Name))
           {
             switch (item.Name)
             {
               case "Wheat":
-                wheatCount = item.Stack;
+                wheatCount += item.Stack;
                 break;
               case "Beet":
-                beetCount = item.Stack;
+                beetCount += item.Stack;
+                break;
+              case "Unmilled Rice":
+                unmilledriceCount += item.Stack;
                 break;
             }
           }
@@ -154,7 +165,7 @@ namespace UIInfoSuite2.UIElements
 
         if (wheatCount > 0)
         {
-          builder.Append(wheatCount + " wheat");
+          builder.Append($"{ItemRegistry.GetData("(O)262").DisplayName}:{wheatCount}");
         }
 
         if (beetCount > 0)
@@ -164,7 +175,17 @@ namespace UIInfoSuite2.UIElements
             builder.Append(Environment.NewLine);
           }
 
-          builder.Append(beetCount + " beets");
+          builder.Append($"{ItemRegistry.GetData("(O)284").DisplayName}:{beetCount}");
+        }
+
+        if (unmilledriceCount > 0)
+        {
+          if (beetCount > 0 || wheatCount > 0)
+          {
+            builder.Append(Environment.NewLine);
+          }
+
+          builder.Append($"{ItemRegistry.GetData("(O)271").DisplayName}:{unmilledriceCount}");
         }
 
         if (builder.Length > 0)
@@ -312,9 +333,7 @@ namespace UIInfoSuite2.UIElements
               if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
               {
                 Vector2 tilePosition = Utility.ModifyCoordinatesForUIScale(
-                  Game1.GlobalToLocal(
-                    new Vector2(terrain.currentTileLocation.X, terrain.currentTileLocation.Y) * Game1.tileSize
-                  )
+                  Game1.GlobalToLocal(new Vector2(terrain.Tile.X, terrain.Tile.Y) * Game1.tileSize)
                 );
                 overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
                 overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
@@ -330,11 +349,11 @@ namespace UIInfoSuite2.UIElements
             }
           }
         }
-        else if (terrain is FruitTree)
+        else if (terrain is FruitTree tree)
         {
-          var tree = terrain as FruitTree;
-          string? text = new Object(new Debris(tree.indexOfFruit.Value, Vector2.Zero, Vector2.Zero).chunkType.Value, 1)
-            .DisplayName;
+          string itemIdOfFruit =
+            tree.GetData().Fruit.First().ItemId; // TODO 1.6: Might be broken because of more than one item.
+          string? text = ItemRegistry.GetData(itemIdOfFruit).DisplayName;
           if (tree.daysUntilMature.Value > 0)
           {
             text += Environment.NewLine +
@@ -345,11 +364,8 @@ namespace UIInfoSuite2.UIElements
 
           if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
           {
-            Vector2 tilePosition = Utility.ModifyCoordinatesForUIScale(
-              Game1.GlobalToLocal(
-                new Vector2(terrain.currentTileLocation.X, terrain.currentTileLocation.Y) * Game1.tileSize
-              )
-            );
+            Vector2 tilePosition =
+              Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(terrain.Tile * Game1.tileSize));
             overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
             overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
           }
@@ -370,17 +386,15 @@ namespace UIInfoSuite2.UIElements
             int teaAge = bush.getAge();
             if (teaAge < 20)
             {
-              string text = new Object(251, 1).DisplayName +
+              string text = new Object("(O)251", 1).DisplayName // 251 <- Tea Sapling
+                            +
                             $"\n{20 - teaAge} " +
                             _helper.SafeGetString(LanguageKeys.DaysToMature);
 
               if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
               {
-                Vector2 tilePosition = Utility.ModifyCoordinatesForUIScale(
-                  Game1.GlobalToLocal(
-                    new Vector2(terrain.currentTileLocation.X, terrain.currentTileLocation.Y) * Game1.tileSize
-                  )
-                );
+                Vector2 tilePosition =
+                  Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(terrain.Tile * Game1.tileSize));
                 overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
                 overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
               }
@@ -400,9 +414,11 @@ namespace UIInfoSuite2.UIElements
 
     private string? GetCropHarvestName(Crop crop)
     {
-      if (crop.indexOfHarvest.Value > 0)
+      if (crop.indexOfHarvest.Value is not null)
       {
-        int itemId = crop.isWildSeedCrop() ? crop.whichForageCrop.Value : crop.indexOfHarvest.Value;
+        // If you look at Crop.cs in the decompiled sources, it seems that there's a special case for spring onions - that's what the =="1" is about.
+        string itemId = crop.whichForageCrop.Value == "1" ? "399" :
+          crop.isWildSeedCrop() ? crop.whichForageCrop.Value : crop.indexOfHarvest.Value;
         if (!_indexOfCropNames.TryGetValue(itemId, out string? harvestName))
         {
           harvestName = new Object(itemId, 1).DisplayName;

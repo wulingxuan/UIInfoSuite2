@@ -78,9 +78,9 @@ namespace UIInfoSuite2.Compatibility
       return modFind.Invoke<object?>(fullId);
     }
 
-    public int GetDgaObjectFakeId(SObject dgaItem)
+    public string GetDgaObjectFakeId(SObject dgaItem)
     {
-      return DgaFakeId.GetId(dgaItem);
+      return dgaItem.ItemId;
     }
 
   #region Code loading from DGA assembly
@@ -106,8 +106,6 @@ namespace UIInfoSuite2.Compatibility
     /// But it first checks using a roundabout way, that the copy-pasted code is still valid.
     private class DgaFakeIdRetriever
     {
-      private bool? deterministicHashCodeIsCorrect;
-
       public DgaFakeIdRetriever(DynamicGameAssetsHelper dgaHelper)
       {
         DgaHelper = dgaHelper;
@@ -115,43 +113,41 @@ namespace UIInfoSuite2.Compatibility
 
       private DynamicGameAssetsHelper DgaHelper { get; }
 
-      public int GetId(SObject dgaItem)
+      public string GetId(SObject dgaItem)
       {
-        if (deterministicHashCodeIsCorrect == null)
-        {
-          int hashedId = GetIdByDeterministicHashCode(dgaItem);
-          int shippedId = GetIdByShippingIt(dgaItem);
-          deterministicHashCodeIsCorrect = hashedId == shippedId;
+        // TODO 1.6 -- I'm assuming this deterministic hash code thing was some shenanigans to deal with not having a unique ID
+        return dgaItem.ItemId;
+        //if (deterministicHashCodeIsCorrect == null)
+        //{
+        //    int hashedId = this.GetIdByDeterministicHashCode(dgaItem);
+        //    string shippedId = this.GetIdByShippingIt(dgaItem);
+        //    deterministicHashCodeIsCorrect = (hashedId == shippedId);
 
-          if ((bool)deterministicHashCodeIsCorrect)
-          {
-            DgaHelper.Monitor.Log($"{GetType().Name}: The GetDeterministicHashCode implementation seems to be correct");
-          }
-          else
-          {
-            DgaHelper.Monitor.Log(
-              $"{GetType().Name}: The GetDeterministicHashCode implementation seems to be incorrect. Processing DGA items will be slower.",
-              LogLevel.Info
-            );
-          }
+        //    if ((bool) deterministicHashCodeIsCorrect)
+        //        DgaHelper.Monitor.Log($"{this.GetType().Name}: The GetDeterministicHashCode implementation seems to be correct", LogLevel.Trace);
+        //    else
+        //        DgaHelper.Monitor.Log($"{this.GetType().Name}: The GetDeterministicHashCode implementation seems to be incorrect. Processing DGA items will be slower.", LogLevel.Info);
 
-          return shippedId;
-        }
-
-        if (deterministicHashCodeIsCorrect == true)
-        {
-          return GetIdByDeterministicHashCode(dgaItem);
-        }
-
-        return GetIdByShippingIt(dgaItem);
+        //    return shippedId;
+        //}
+        //else if (deterministicHashCodeIsCorrect == true)
+        //{
+        //    return this.GetIdByDeterministicHashCode(dgaItem);
+        //}
+        //else
+        //{
+        //    return this.GetIdByShippingIt(dgaItem);
+        //}
       }
 
-      private int GetIdByDeterministicHashCode(SObject dgaItem)
+      private string GetIdByDeterministicHashCode(SObject dgaItem)
       {
-        return GetDeterministicHashCode(DgaHelper.GetFullId(dgaItem)!);
+        // TODO 1.6 -- I'm assuming this deterministic hash code thing was some shenanigans to deal with not having a unique ID
+        return dgaItem.ItemId;
+        //return this.GetDeterministicHashCode(DgaHelper.GetFullId(dgaItem)!);
       }
 
-      private int GetIdByShippingIt(SObject dgaItem)
+      private string GetIdByShippingIt(SObject dgaItem)
       {
         DgaHelper.Monitor.Log($"{GetType().Name}: Retrieving the fake DGA item ID for {dgaItem.Name} by shipping it.");
 
@@ -159,7 +155,7 @@ namespace UIInfoSuite2.Compatibility
 
         // Record previous state
         uint oldCropsShipped = Game1.stats.CropsShipped;
-        var oldBasicShipped = new Dictionary<int, int>(
+        var oldBasicShipped = new Dictionary<string, int>(
           Game1.player.basicShipped.FieldDict.Select(x => KeyValuePair.Create(x.Key, x.Value.Value))
         );
 
@@ -168,11 +164,11 @@ namespace UIInfoSuite2.Compatibility
 
         // Restore previous state
         Game1.stats.CropsShipped = oldCropsShipped;
-        NetIntDictionary<int, NetInt>? basicShipped = Game1.player.basicShipped;
+        NetStringDictionary<int, NetInt>? basicShipped = Game1.player.basicShipped;
 
         // Find the new item
-        List<int> newItems = new();
-        foreach (int shipped in basicShipped.Keys)
+        List<string> newItems = new();
+        foreach (string? shipped in basicShipped.Keys)
         {
           if (oldBasicShipped.TryGetValue(shipped, out int oldValue))
           {
@@ -317,7 +313,7 @@ namespace UIInfoSuite2.Compatibility
 
       if (dropItemType == "VanillaItem")
       {
-        return new SObject(int.Parse(dropItemValue), 1);
+        return new SObject(dropItemValue, 1);
       }
 
       throw new Exception("Harvest types other than DGAItem and VanillaItem are not supported");

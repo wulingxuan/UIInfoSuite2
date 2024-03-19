@@ -57,6 +57,12 @@ namespace UIInfoSuite2.UIElements
         return;
       }
 
+      // Ticks can happen when the player reverts to the loading screen; defend against that.
+      if (Game1.currentLocation is null)
+      {
+        return;
+      }
+
       if (_mutex.WaitOne())
       {
         try
@@ -116,19 +122,16 @@ namespace UIInfoSuite2.UIElements
       List<Object> similarObjects;
 
       // Junimo Hut is handled differently, because it is a building
-      if (Game1.currentLocation is BuildableGameLocation buildableLocation)
-      {
-        Building building = buildableLocation.getBuildingAt(Game1.GetPlacementGrabTile());
+      Building building = Game1.currentLocation.getBuildingAt(Game1.GetPlacementGrabTile());
 
-        if (building is JunimoHut)
+      if (building is JunimoHut)
+      {
+        arrayToUse = GetDistanceArray(ObjectsWithDistance.JunimoHut);
+        foreach (Building? nextBuilding in Game1.currentLocation.buildings)
         {
-          arrayToUse = GetDistanceArray(ObjectsWithDistance.JunimoHut);
-          foreach (Building? nextBuilding in buildableLocation.buildings)
+          if (nextBuilding is JunimoHut nextHut)
           {
-            if (nextBuilding is JunimoHut nextHut)
-            {
-              AddTilesToHighlightedArea(arrayToUse, nextHut.tileX.Value + 1, nextHut.tileY.Value + 1);
-            }
+            AddTilesToHighlightedArea(arrayToUse, nextHut.tileX.Value + 1, nextHut.tileY.Value + 1);
           }
         }
       }
@@ -171,7 +174,17 @@ namespace UIInfoSuite2.UIElements
         else if (itemName.IndexOf("sprinkler", StringComparison.OrdinalIgnoreCase) >= 0)
         {
           // Relative tile positions to the placable items locations - need to pass coordinates
-          AddTilesToHighlightedArea(currentItem.GetSprinklerTiles(), (int)validTile.X, (int)validTile.Y);
+
+          /*
+           * @NermNermNerm:
+           * This change is a little bit worrisome because Object.GetSprinklerTiles didn't semantically change in 1.6...
+           * But it did change. Somebody noodled over it and changed a variable name.
+           * However, its behavior got changed by something else -
+           * in the past it was zero-based - as Object.tileLocation used to be 0.0 for unplaced objects,
+           * and now it's the tile that's being hovered over.
+           * That new behavior might not be intended and might get rolled back.
+           */
+          AddTilesToHighlightedArea(currentItem.GetSprinklerTiles());
 
           similarObjects = GetSimilarObjectsInLocation("sprinkler");
           foreach (Object next in similarObjects)

@@ -545,17 +545,17 @@ namespace UIInfoSuite2.Options
         {
           // Update the downNeighborID for our tab
           // Based on GameMenu.setTabNeighborsForCurrentPage
-          switch (gameMenu.currentTab)
+          if (gameMenu.currentTab == GameMenu.inventoryTab)
           {
-            case GameMenu.inventoryTab:
-              _modOptionsTab.Value.downNeighborID = downNeighborInInventory;
-              break;
-            case GameMenu.exitTab:
-              _modOptionsTab.Value.downNeighborID = 535;
-              break;
-            default:
-              _modOptionsTab.Value.downNeighborID = ClickableComponent.SNAP_TO_DEFAULT;
-              break;
+            _modOptionsTab.Value.downNeighborID = downNeighborInInventory;
+          }
+          else if (gameMenu.currentTab == GameMenu.exitTab)
+          {
+            _modOptionsTab.Value.downNeighborID = 535;
+          }
+          else
+          {
+            _modOptionsTab.Value.downNeighborID = ClickableComponent.SNAP_TO_DEFAULT;
           }
 
           AddOurTabToClickableComponents(gameMenu, _modOptionsTab.Value);

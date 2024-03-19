@@ -9,7 +9,6 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
-using StardewValley.Objects;
 using StardewValley.Tools;
 using UIInfoSuite2.Compatibility;
 using UIInfoSuite2.Infrastructure;
@@ -31,7 +30,7 @@ namespace UIInfoSuite2.UIElements
 
     private readonly PerScreen<Item?> _hoverItem = new();
     private readonly ClickableTextureComponent _museumIcon;
-    private readonly Dictionary<string, List<KeyValuePair<int, int>>> _prunedRequiredBundles = new();
+    private readonly Dictionary<string, List<ItemAndQuality>> _prunedRequiredBundles = new();
 
     private readonly ClickableTextureComponent _shippingBottomIcon = new(
       new Rectangle(0, 0, Game1.tileSize, Game1.tileSize),
@@ -127,8 +126,8 @@ namespace UIInfoSuite2.UIElements
 
     /// <summary>
     ///   Raised after drawing the HUD (item toolbar, clock, etc) to the sprite batch, but before it's rendered to the
-    ///   screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open). Content drawn to the sprite
-    ///   batch at this point will appear over the HUD.
+    ///   screen. The vanilla HUD may be hidden at this point (e.g. because a menu is open). Content drawn to the sprite batch
+    ///   at this point will appear over the HUD.
     /// </summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The event arguments.</param>
@@ -218,15 +217,16 @@ namespace UIInfoSuite2.UIElements
                 ? bundleInfo[0]
                 : bundleInfo[^1];
             string[] bundleValues = bundleInfo[2].Split(' ');
-            var source = new List<KeyValuePair<int, int>>();
+            List<ItemAndQuality> source = new();
 
             for (var i = 0; i < bundleValues.Length; i += 3)
             {
-              int bundleValue = bundleValues[i].SafeParseInt32();
+              string bundleValue = bundleValues[i];
               int quality = bundleValues[i + 2].SafeParseInt32();
-              if (bundleValue != -1 && !_communityCenter.bundles[bundleNumber][i / 3])
+              if (bundleValue != "-1" && !_communityCenter.bundles[bundleNumber][i / 3])
               {
-                source.Add(new KeyValuePair<int, int>(bundleValue, quality));
+                // 1.6ism - we're presuming that all bundles will always be Objects
+                source.Add(new ItemAndQuality("(O)" + bundleValue, quality));
               }
             }
 
@@ -276,7 +276,7 @@ namespace UIInfoSuite2.UIElements
 
         bool notShippedYet = hoveredObject != null &&
                              hoveredObject.countsForShippedCollection() &&
-                             !Game1.player.basicShipped.ContainsKey(hoveredObject.ParentSheetIndex) &&
+                             !Game1.player.basicShipped.ContainsKey(hoveredObject.ItemId) &&
                              hoveredObject.Type != "Fish";
         if (notShippedYet &&
             hoveredObject != null &&
@@ -295,11 +295,8 @@ namespace UIInfoSuite2.UIElements
             // This means that DGA items do not (yet) count for the "Full Shipment" achievement even though they appear in the collections page.
 
             // Nonetheless, show the icon if that item is still hidden in the collections page.
-            int dgaId = dgaHelper.GetDgaObjectFakeId(hoveredObject);
-            string t = hoveredObject.Type;
-            bool inCollectionsPage =
-              !(t.Contains("Arch") || t.Contains("Fish") || t.Contains("Mineral") || t.Contains("Cooking")) &&
-              Object.isPotentialBasicShippedCategory(dgaId, hoveredObject.Category.ToString());
+            string dgaId = dgaHelper.GetDgaObjectFakeId(hoveredObject);
+            bool inCollectionsPage = Object.isPotentialBasicShipped(dgaId, hoveredObject.Category, hoveredObject.Type);
 
             notShippedYet = inCollectionsPage && !Game1.player.basicShipped.ContainsKey(dgaId);
           }
@@ -314,14 +311,13 @@ namespace UIInfoSuite2.UIElements
         }
 
         string? requiredBundleName = null;
-        // Bundle items must be "small" objects. This avoids marking other kinds of objects as needed, such as Chest (id 130), Recycling Machine (id 20), etc...
-        if (hoveredObject != null && !hoveredObject.bigCraftable.Value && hoveredObject is not Furniture)
+        if (hoveredObject != null)
         {
-          foreach (KeyValuePair<string, List<KeyValuePair<int, int>>> requiredBundle in _prunedRequiredBundles)
+          foreach (KeyValuePair<string, List<ItemAndQuality>> requiredBundle in _prunedRequiredBundles)
           {
             if (requiredBundle.Value.Any(
-                  itemQuality => itemQuality.Key == hoveredObject.ParentSheetIndex &&
-                                 hoveredObject.Quality >= itemQuality.Value
+                  itemQuality => itemQuality.qualifiedItemId == hoveredObject.QualifiedItemId &&
+                                 hoveredObject.Quality >= itemQuality.quality
                 ))
             {
               requiredBundleName = requiredBundle.Key;
@@ -605,5 +601,7 @@ namespace UIInfoSuite2.UIElements
         0.86f
       );
     }
+
+    private record ItemAndQuality(string qualifiedItemId, int quality);
   }
 }

@@ -121,20 +121,19 @@ namespace UIInfoSuite2.UIElements
       return Game1.MasterPlayer.mailReceived.Contains("willyBoatFixed");
     }
 
-    private static int GetWeatherForTomorrow()
+    private static string GetWeatherForTomorrow()
     {
       var date = new WorldDate(Game1.Date);
       ++date.TotalDays;
-      int tomorrowWeather = Game1.IsMasterGame
+      string tomorrowWeather = Game1.IsMasterGame
         ? Game1.weatherForTomorrow
         : Game1.netWorldState.Value.WeatherForTomorrow;
       return Game1.getWeatherModificationsForDate(date, tomorrowWeather);
     }
 
-    private static int GetIslandWeatherForTomorrow()
+    private static string GetIslandWeatherForTomorrow()
     {
-      return Game1.netWorldState.Value.GetWeatherForLocation(GameLocation.LocationContext.Island)
-                  .weatherForTomorrow.Value;
+      return Game1.netWorldState.Value.GetWeatherForLocation("Island").WeatherForTomorrow;
     }
 
     /// <summary>
@@ -238,8 +237,7 @@ namespace UIInfoSuite2.UIElements
 
     private void SetIslandWeatherSprite()
     {
-      int islandWeather = GetIslandWeatherForTomorrow();
-      switch (islandWeather)
+      switch (GetIslandWeatherForTomorrow())
       {
         case Game1.weather_rain:
           _islandWeather.IsRainyTomorrow = true;

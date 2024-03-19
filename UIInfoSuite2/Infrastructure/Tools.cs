@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.Crops;
+using StardewValley.GameData.FruitTrees;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using UIInfoSuite2.Compatibility;
@@ -15,23 +15,6 @@ namespace UIInfoSuite2.Infrastructure
 {
   public static class Tools
   {
-    public static void CreateSafeDelayedDialogue(string dialogue, int timer)
-    {
-      Task.Factory.StartNew(
-        () =>
-        {
-          Thread.Sleep(timer);
-
-          do
-          {
-            Thread.Sleep(TimeSpan.FromSeconds(1));
-          } while (Game1.activeClickableMenu is GameMenu);
-
-          Game1.setDialogue(dialogue, true);
-        }
-      );
-    }
-
     public static int GetWidthInPlayArea()
     {
       if (Game1.isOutdoorMapSmallerThanViewport())
@@ -58,14 +41,12 @@ namespace UIInfoSuite2.Infrastructure
 
     public static SObject? GetHarvest(Item item)
     {
-      if (item is SObject seedsObject &&
-          seedsObject.Category == SObject.SeedsCategory &&
-          seedsObject.ParentSheetIndex != Crop.mixedSeedIndex)
+      if (item is SObject { Category: SObject.SeedsCategory } seedsObject && seedsObject.ItemId != Crop.mixedSeedsId)
       {
-        if (seedsObject.isSapling())
+        if (seedsObject.IsFruitTreeSapling() && FruitTree.TryGetData(item.ItemId, out FruitTreeData? fruitTreeData))
         {
-          var tree = new FruitTree(seedsObject.ParentSheetIndex);
-          return new SObject(tree.indexOfFruit.Value, 1);
+          // TODO support multiple items returned
+          return ItemRegistry.Create<SObject>(fruitTreeData.Fruit[0].ItemId);
         }
 
         if (ModEntry.DGA.IsCustomObject(item, out DynamicGameAssetsHelper? dgaHelper))
@@ -95,8 +76,10 @@ namespace UIInfoSuite2.Infrastructure
           }
         }
 
-        var crop = new Crop(seedsObject.ParentSheetIndex, 0, 0);
-        return new SObject(crop.indexOfHarvest.Value, 1);
+        if (Crop.TryGetData(item.ItemId, out CropData cropData) && cropData.HarvestItemId is not null)
+        {
+          return ItemRegistry.Create<SObject>(cropData.HarvestItemId);
+        }
       }
 
       return null;
@@ -134,26 +117,14 @@ namespace UIInfoSuite2.Infrastructure
 
       if (Game1.activeClickableMenu == null && Game1.onScreenMenus != null)
       {
-        foreach (IClickableMenu? menu in Game1.onScreenMenus)
-        {
-          if (menu is Toolbar toolbar)
-          {
-            FieldInfo hoverItemField = typeof(Toolbar).GetField(
-              "hoverItem",
-              BindingFlags.Instance | BindingFlags.NonPublic
-            );
-            hoverItem = hoverItemField.GetValue(toolbar) as Item;
-          }
-        }
+        hoverItem = Game1.onScreenMenus.OfType<Toolbar>()
+                         .Select(tb => tb.hoverItem)
+                         .FirstOrDefault(hi => hi is not null);
       }
 
       if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.GetCurrentPage() is InventoryPage inventory)
       {
-        FieldInfo hoveredItemField = typeof(InventoryPage).GetField(
-          "hoveredItem",
-          BindingFlags.Instance | BindingFlags.NonPublic
-        );
-        hoverItem = hoveredItemField.GetValue(inventory) as Item;
+        hoverItem = inventory.hoveredItem;
       }
 
       if (Game1.activeClickableMenu is ItemGrabMenu itemMenu)

@@ -119,7 +119,7 @@ namespace UIInfoSuite2.UIElements
       {
         foreach (NPC? character in location.characters)
         {
-          if (character.isBirthday(Game1.currentSeason, Game1.dayOfMonth))
+          if (character.isBirthday())
           {
             Friendship? friendship = GetFriendshipWithNPC(character.Name);
             if (friendship != null)

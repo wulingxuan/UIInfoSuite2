@@ -12,8 +12,7 @@ namespace UIInfoSuite2.UIElements
   internal class ShowTodaysGifts : IDisposable
   {
   #region Properties
-    private string[] _friendNames;
-    private SocialPage _socialPage;
+    private SocialPage? _socialPage;
     private readonly IModHelper _helper;
   #endregion
 
@@ -42,15 +41,15 @@ namespace UIInfoSuite2.UIElements
   #endregion
 
   #region Event subscriptions
-    private void OnRenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e)
+    private void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)
     {
       if (_socialPage == null)
       {
-        ExtendMenuIfNeeded();
+        GetSocialPage();
         return;
       }
 
-      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == 2)
+      if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.currentTab == GameMenu.socialTab)
       {
         DrawTodaysGifts();
 
@@ -59,43 +58,52 @@ namespace UIInfoSuite2.UIElements
       }
     }
 
-    private void OnMenuChanged(object sender, MenuChangedEventArgs e)
+    private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
     {
-      ExtendMenuIfNeeded();
+      GetSocialPage();
     }
   #endregion
 
   #region Logic
-    private void ExtendMenuIfNeeded()
+    private void GetSocialPage()
     {
-      if (Game1.activeClickableMenu is GameMenu gameMenu)
+      if (Game1.activeClickableMenu is not GameMenu gameMenu)
       {
-        foreach (IClickableMenu? menu in gameMenu.pages)
+        return;
+      }
+
+      foreach (IClickableMenu? menu in gameMenu.pages)
+      {
+        if (menu is not SocialPage page)
         {
-          if (menu is SocialPage page)
-          {
-            _socialPage = page;
-            _friendNames = _socialPage.names.Select(name => name.ToString()).ToArray();
-            break;
-          }
+          continue;
         }
+
+        _socialPage = page;
+        break;
       }
     }
 
     private void DrawTodaysGifts()
     {
+      if (_socialPage == null)
+      {
+        return;
+      }
+
       var slotPosition = (int)typeof(SocialPage)
                               .GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)
                               .GetValue(_socialPage);
       var yOffset = 25;
 
-      for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
+      for (int i = slotPosition; i < slotPosition + 5 && i < _socialPage.SocialEntries.Count; ++i)
       {
         int yPosition = Game1.activeClickableMenu.yPositionOnScreen + 130 + yOffset;
         yOffset += 112;
-        string nextName = _friendNames[i];
-        if (_socialPage.getFriendship(nextName).GiftsToday != 0 &&
-            _socialPage.getFriendship(nextName).GiftsThisWeek < 2)
+        string internalName = _socialPage.SocialEntries[i].InternalName;
+        if (Game1.player.friendshipData.TryGetValue(internalName, out Friendship? data) &&
+            data.GiftsToday != 0 &&
+            data.GiftsThisWeek < 2)
         {
           Game1.spriteBatch.Draw(
             Game1.mouseCursors,

@@ -63,7 +63,7 @@ namespace UIInfoSuite2.UIElements
     {
       GetWeatherIconSpriteLocation();
 
-      if (Game1.eventUp)
+      if (!UIElementUtils.IsRenderingNormally())
       {
         return;
       }

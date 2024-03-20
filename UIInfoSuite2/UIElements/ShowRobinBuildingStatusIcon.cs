@@ -62,7 +62,7 @@ namespace UIInfoSuite2.UIElements
     private void OnRenderingHud(object sender, RenderingHudEventArgs e)
     {
       // Draw icon
-      if (!Game1.eventUp && _IsBuildingInProgress && _buildingIconSpriteLocation.HasValue)
+      if (UIElementUtils.IsRenderingNormally() && _IsBuildingInProgress && _buildingIconSpriteLocation.HasValue)
       {
         Point iconPosition = IconHandler.Handler.GetNewIconPosition();
         _buildingIcon.Value = new ClickableTextureComponent(

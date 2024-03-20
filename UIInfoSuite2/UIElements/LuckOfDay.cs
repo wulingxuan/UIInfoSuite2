@@ -96,7 +96,7 @@ namespace UIInfoSuite2.UIElements
     private void OnRenderingHud(object sender, RenderingHudEventArgs e)
     {
       // draw dice icon
-      if (!Game1.eventUp)
+      if (UIElementUtils.IsRenderingNormally())
       {
         Point iconPosition = IconHandler.Handler.GetNewIconPosition();
         ClickableTextureComponent icon = _icon.Value;

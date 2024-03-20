@@ -118,7 +118,7 @@ namespace UIInfoSuite2.UIElements
     private void OnRenderingHud(object sender, RenderingHudEventArgs e)
     {
       // Draw a 40x40 icon
-      if (!Game1.eventUp && _toolBeingUpgraded.Value != null)
+      if (UIElementUtils.IsRenderingNormally() && _toolBeingUpgraded.Value != null)
       {
         Point iconPosition = IconHandler.Handler.GetNewIconPosition();
         _toolUpgradeIcon.Value = new ClickableTextureComponent(

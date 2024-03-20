@@ -75,7 +75,7 @@ internal class ShowItemEffectRanges : IDisposable
       }
     }
 
-    if (Game1.activeClickableMenu == null && !Game1.eventUp)
+    if (Game1.activeClickableMenu == null && UIElementUtils.IsRenderingNormally())
     {
       UpdateEffectiveArea();
     }

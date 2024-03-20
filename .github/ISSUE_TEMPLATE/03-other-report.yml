@@ -1,24 +1,24 @@
-name: Bug Report
-description: File a bug report
+name: Generic Bug Report
+description: Any report not covered by visual, or breaking templates.
 title: "[Bug]: "
-labels: ["bug", "triage"]
+labels: ["bug (other)", "triage"]
 assignees:
   - drewhoener
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: dropdown
+        ## Misc Report
+        This report is for issues that might not fit into the "visual issue" or "breaking issue" categories.
+        If you're experiencing one of those bugs, please go and fill out the appropriate bug report.
+
+        Thanks for taking the time to report an issue!
+  - type: input
     id: mod-version
     attributes:
       label: Game Version
       description: What version of UIInfoSuite2 are you running?
-      options:
-        - v2.3.0-alpha-2
-        - v2.3.0-alpha-1
-        - v2.2.10 (Stardew 1.5)
-      default: 0
+      value: "v2.3.0-alpha-2"
     validations:
       required: true
   - type: dropdown
@@ -26,7 +26,7 @@ body:
     attributes:
       label: Multiplayer
       description: |
-        Did this issue occur in multiplayer?  
+        Did this issue occur in multiplayer?
         If so, indicate whether you were the client or the host.
       options:
         - Single Player
@@ -36,34 +36,13 @@ body:
       default: 0
     validations:
       required: true
-  - type: dropdown
-    id: breaking
-    attributes:
-      label: Breaking Bug
-      description: |
-        Is this a Breaking Issue?
-        Does the game crash, or does the mod refuse to load?
-      options:
-        - Non-Breaking
-        - Breaking (Game crashes)
-        - Breaking (Mod doesn't load)
-      default: 0
-    validations:
-      required: true
   - type: input
     id: log-link
     attributes:
       label: SMAPI Log
       description: |
-        Is this a breaking bug? Are there UIInfoSuite2 errors in your log?
+        Are there UIInfoSuite2 errors in your log?
         If so, please upload it to https://smapi.io/log and share the link below
-  - type: input
-    id: visual-settings
-    attributes:
-      label: Visual Settings
-      description: |
-        Is this a visual bug? If so, provide your UI Zoom and UI Scale settings
-      value: "UI Scale: 100%, Zoom: 100%"
   - type: textarea
     id: description
     attributes:
@@ -71,6 +50,16 @@ body:
       description: |
         Please describe what happened, as well as what you expected to happen.
         If possible, please include images or steps to reproduce your issue!
-      placeholder: Tell us what you see!
+      value: |
+        ### Issue
+        <!---
+            Describe Your Issue, include screenshots if able
+        --->
+
+        ### Steps to Reproduce
+        1. First
+        2. Second
+        3. Third
+        4. Fourth
     validations:
       required: true

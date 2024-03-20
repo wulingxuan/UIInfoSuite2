@@ -57,6 +57,13 @@ body:
       description: |
         Is this a breaking bug? Are there UIInfoSuite2 errors in your log?
         If so, please upload it to https://smapi.io/log and share the link below
+  - type: input
+    id: visual-settings
+    attributes:
+      label: Visual Settings
+      description: |
+        Is this a visual bug? If so, provide your UI Zoom and UI Scale settings
+      value: "UI Scale: 100%, Zoom: 100%"
   - type: textarea
     id: description
     attributes:

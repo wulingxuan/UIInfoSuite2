@@ -37,12 +37,12 @@ namespace UIInfoSuite2.UIElements
 
     public void ToggleOption(bool showItemEffectRanges)
     {
-      _helper.Events.Display.Rendered -= OnRendered;
+      _helper.Events.Display.RenderingHud -= OnRenderingHud;
       _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
 
       if (showItemEffectRanges)
       {
-        _helper.Events.Display.Rendered += OnRendered;
+        _helper.Events.Display.RenderingHud += OnRenderingHud;
         _helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
       }
     }
@@ -50,7 +50,7 @@ namespace UIInfoSuite2.UIElements
 
 
   #region Event subscriptions
-    private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
+    private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
     {
       if (!e.IsMultipleOf(4))
       {
@@ -81,7 +81,7 @@ namespace UIInfoSuite2.UIElements
       }
     }
 
-    private void OnRendered(object sender, RenderedEventArgs e)
+    private void OnRenderingHud(object? sender, RenderingHudEventArgs e)
     {
       if (_mutex.WaitOne(0))
       {
@@ -93,7 +93,7 @@ namespace UIInfoSuite2.UIElements
               point.X * Utility.ModifyCoordinateFromUIScale(Game1.tileSize),
               point.Y * Utility.ModifyCoordinateFromUIScale(Game1.tileSize)
             );
-            Game1.spriteBatch.Draw(
+            e.SpriteBatch.Draw(
               Game1.mouseCursors,
               Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(Utility.ModifyCoordinatesForUIScale(position))),
               new Rectangle(194, 388, 16, 16),

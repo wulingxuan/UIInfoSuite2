@@ -81,7 +81,7 @@ namespace UIInfoSuite2.UIElements
     {
       _helper.Events.GameLoop.DayStarted -= OnDayStarted;
       _helper.Events.Player.InventoryChanged -= OnInventoryChanged;
-      _helper.Events.Display.Rendered -= OnRendered;
+      _helper.Events.Display.RenderedActiveMenu -= OnRenderedActiveMenu;
       _helper.Events.Display.RenderedHud -= OnRenderedHud;
       _helper.Events.Display.Rendering -= OnRendering;
 
@@ -93,14 +93,14 @@ namespace UIInfoSuite2.UIElements
 
         _helper.Events.GameLoop.DayStarted += OnDayStarted;
         _helper.Events.Player.InventoryChanged += OnInventoryChanged;
-        _helper.Events.Display.Rendered += OnRendered;
+        _helper.Events.Display.RenderedActiveMenu += OnRenderedActiveMenu;
         _helper.Events.Display.RenderedHud += OnRenderedHud;
         _helper.Events.Display.Rendering += OnRendering;
       }
     }
 
     // [EventPriority(EventPriority.Low)]
-    private void OnDayStarted(object sender, DayStartedEventArgs e)
+    private void OnDayStarted(object? sender, DayStartedEventArgs e)
     {
       // NB The Custom Community Center mod is only ready at this point
       if (_helper.GameContent.CurrentLocaleConstant == LocalizedContentManager.LanguageCode.en &&
@@ -119,7 +119,7 @@ namespace UIInfoSuite2.UIElements
     /// <summary>Raised before the game draws anything to the screen in a draw tick, as soon as the sprite batch is opened.</summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The event arguments.</param>
-    private void OnRendering(object sender, EventArgs e)
+    private void OnRendering(object? sender, EventArgs e)
     {
       _hoverItem.Value = Tools.GetHoveredItem();
     }
@@ -131,11 +131,11 @@ namespace UIInfoSuite2.UIElements
     /// </summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The event arguments.</param>
-    private void OnRenderedHud(object sender, EventArgs e)
+    private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
     {
       if (Game1.activeClickableMenu == null)
       {
-        DrawAdvancedTooltip();
+        DrawAdvancedTooltip(e.SpriteBatch);
       }
     }
 
@@ -145,11 +145,11 @@ namespace UIInfoSuite2.UIElements
     /// </summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The event arguments.</param>
-    private void OnRendered(object sender, EventArgs e)
+    private void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)
     {
       if (Game1.activeClickableMenu != null)
       {
-        DrawAdvancedTooltip();
+        DrawAdvancedTooltip(e.SpriteBatch);
       }
     }
 
@@ -159,7 +159,7 @@ namespace UIInfoSuite2.UIElements
     /// </summary>
     /// <param name="sender">The event sender.</param>
     /// <param name="e">The event arguments.</param>
-    private void OnInventoryChanged(object sender, InventoryChangedEventArgs e)
+    private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
     {
       if (e.IsLocalPlayer)
       {
@@ -253,8 +253,9 @@ namespace UIInfoSuite2.UIElements
     //private int lastWindowWidth;
     //private string lastRequiredBundleName;
 
-    private void DrawAdvancedTooltip()
+    private void DrawAdvancedTooltip(SpriteBatch spriteBatch)
     {
+
       if (_hoverItem.Value != null &&
           !(_hoverItem.Value is MeleeWeapon weapon && weapon.isScythe()) &&
           !(_hoverItem.Value is FishingRod))
@@ -407,7 +408,7 @@ namespace UIInfoSuite2.UIElements
             notShippedYet)
         {
           IClickableMenu.drawTextureBox(
-            Game1.spriteBatch,
+            spriteBatch,
             Game1.menuTexture,
             new Rectangle(0, 256, 60, 60),
             (int)windowPos.X,
@@ -420,7 +421,7 @@ namespace UIInfoSuite2.UIElements
 
         if (itemPrice > 0)
         {
-          Game1.spriteBatch.Draw(
+          spriteBatch.Draw(
             Game1.debrisSpriteSheet,
             drawPosition + iconCenterOffset,
             Game1.getSourceRectForStandardTileSheet(Game1.debrisSpriteSheet, 8, 16, 16),
@@ -432,7 +433,7 @@ namespace UIInfoSuite2.UIElements
             0.95f
           );
 
-          DrawSmallTextWithShadow(Game1.spriteBatch, itemPrice.ToString(), drawPosition + textOffset);
+          DrawSmallTextWithShadow(spriteBatch, itemPrice.ToString(), drawPosition + textOffset);
 
           drawPosition.Y += rowHeight;
         }
@@ -440,7 +441,7 @@ namespace UIInfoSuite2.UIElements
         if (stackPrice > 0)
         {
           var overlapOffset = new Vector2(0, 10);
-          Game1.spriteBatch.Draw(
+          spriteBatch.Draw(
             Game1.debrisSpriteSheet,
             drawPosition + iconCenterOffset - overlapOffset / 2,
             Game1.getSourceRectForStandardTileSheet(Game1.debrisSpriteSheet, 8, 16, 16),
@@ -451,7 +452,7 @@ namespace UIInfoSuite2.UIElements
             SpriteEffects.None,
             0.95f
           );
-          Game1.spriteBatch.Draw(
+          spriteBatch.Draw(
             Game1.debrisSpriteSheet,
             drawPosition + iconCenterOffset + overlapOffset / 2,
             Game1.getSourceRectForStandardTileSheet(Game1.debrisSpriteSheet, 8, 16, 16),
@@ -463,14 +464,14 @@ namespace UIInfoSuite2.UIElements
             0.95f
           );
 
-          DrawSmallTextWithShadow(Game1.spriteBatch, stackPrice.ToString(), drawPosition + textOffset);
+          DrawSmallTextWithShadow(spriteBatch, stackPrice.ToString(), drawPosition + textOffset);
 
           drawPosition.Y += rowHeight;
         }
 
         if (cropPrice > 0)
         {
-          Game1.spriteBatch.Draw(
+          spriteBatch.Draw(
             Game1.mouseCursors,
             drawPosition + iconCenterOffset,
             new Rectangle(60, 428, 10, 10),
@@ -482,12 +483,12 @@ namespace UIInfoSuite2.UIElements
             0.85f
           );
 
-          DrawSmallTextWithShadow(Game1.spriteBatch, cropPrice.ToString(), drawPosition + textOffset);
+          DrawSmallTextWithShadow(spriteBatch, cropPrice.ToString(), drawPosition + textOffset);
         }
 
         if (notDonatedYet)
         {
-          Game1.spriteBatch.Draw(
+          spriteBatch.Draw(
             _museumIcon.texture,
             windowPos + new Vector2(2, windowHeight + 8),
             _museumIcon.sourceRect,
@@ -504,14 +505,14 @@ namespace UIInfoSuite2.UIElements
         {
           // Draws a 30x42 bundle icon offset by (-7, -13) from the top-left corner of the window
           // and the 36px high banner with the bundle name
-          DrawBundleBanner(requiredBundleName, windowPos + new Vector2(-7, -13), windowWidth);
+          DrawBundleBanner(spriteBatch, requiredBundleName, windowPos + new Vector2(-7, -13), windowWidth);
         }
 
         if (notShippedYet)
         {
           // Draws a 36x28 shipping bin offset by (-24, -6) from the top-right corner of the window
           var shippingBinDims = new Vector2(30, 24);
-          DrawShippingBin(Game1.spriteBatch, windowPos + new Vector2(windowWidth - 6, 8), shippingBinDims / 2);
+          DrawShippingBin(spriteBatch, windowPos + new Vector2(windowWidth - 6, 8), shippingBinDims / 2);
         }
 
         //memorize the result to save processing time when calling again with same values
@@ -532,7 +533,7 @@ namespace UIInfoSuite2.UIElements
       b.DrawString(Game1.smallFont, text, position, Game1.textColor);
     }
 
-    private void DrawBundleBanner(string bundleName, Vector2 position, int windowWidth)
+    private void DrawBundleBanner(SpriteBatch spriteBatch, string bundleName, Vector2 position, int windowWidth)
     {
       // NB The dialogue font has a cap height of 30 and an offset of (3, 6)
 
@@ -544,14 +545,14 @@ namespace UIInfoSuite2.UIElements
       for (var cell = 0; cell < cellCount; ++cell)
       {
         float fadeAmount = 0.92f - (cell < solidCells ? 0 : 1.0f * (cell - solidCells) / (cellCount - solidCells));
-        Game1.spriteBatch.Draw(
+        spriteBatch.Draw(
           Game1.staminaRect,
           new Rectangle(bundleBannerX + cell * cellWidth, bundleBannerY, cellWidth, 36),
           Color.Crimson * fadeAmount
         );
       }
 
-      Game1.spriteBatch.Draw(
+      spriteBatch.Draw(
         Game1.mouseCursors,
         position,
         _bundleIcon.sourceRect,
@@ -563,7 +564,7 @@ namespace UIInfoSuite2.UIElements
         0.86f
       );
 
-      Game1.spriteBatch.DrawString(
+      spriteBatch.DrawString(
         Game1.dialogueFont,
         bundleName,
         position + new Vector2(_bundleIcon.sourceRect.Width * _bundleIcon.scale + 3, 0),
@@ -578,7 +579,7 @@ namespace UIInfoSuite2.UIElements
 
       // NB This is not the texture used to draw the shipping bin on the farm map.
       //    The one for the farm is located in "Buildings\Shipping Bin".
-      Game1.spriteBatch.Draw(
+      b.Draw(
         _shippingBottomIcon.texture,
         position,
         _shippingBottomIcon.sourceRect,
@@ -589,7 +590,7 @@ namespace UIInfoSuite2.UIElements
         SpriteEffects.None,
         0.86f
       );
-      Game1.spriteBatch.Draw(
+      b.Draw(
         _shippingTopIcon.texture,
         position,
         _shippingTopIcon.sourceRect,

@@ -55,8 +55,7 @@ body:
     attributes:
       label: SMAPI Log
       description: |
-        Is this a breaking bug?
-        Are there UIInfoSuite2 errors in your log?
+        Is this a breaking bug? Are there UIInfoSuite2 errors in your log?
         If so, please upload it to https://smapi.io/log and share the link below
   - type: textarea
     id: description

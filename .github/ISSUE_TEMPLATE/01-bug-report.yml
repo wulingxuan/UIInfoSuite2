@@ -34,8 +34,8 @@ body:
         - Multiplayer (Non-Host)
         - Split-Screen
       default: 0
-      validations:
-        required: true
+    validations:
+      required: true
   - type: dropdown
     id: breaking
     attributes:

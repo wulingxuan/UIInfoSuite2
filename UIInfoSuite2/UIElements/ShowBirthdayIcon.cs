@@ -80,7 +80,7 @@ namespace UIInfoSuite2.UIElements
 
     private void OnRenderingHud(object? sender, RenderingHudEventArgs e)
     {
-      if (!Game1.eventUp)
+      if (UIElementUtils.IsRenderingNormally())
       {
         DrawBirthdayIcon();
       }
@@ -89,7 +89,7 @@ namespace UIInfoSuite2.UIElements
 
     private void OnRenderedHud(object? sender, RenderedHudEventArgs e)
     {
-      if (!Game1.eventUp)
+      if (UIElementUtils.IsRenderingNormally())
       {
         DrawHoverText();
       }

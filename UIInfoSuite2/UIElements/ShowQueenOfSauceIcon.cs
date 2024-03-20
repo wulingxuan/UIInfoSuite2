@@ -90,7 +90,7 @@ namespace UIInfoSuite2.UIElements
 
     private void OnRenderingHud(object sender, RenderingHudEventArgs e)
     {
-      if (!Game1.eventUp)
+      if (UIElementUtils.IsRenderingNormally())
       {
         if (_drawQueenOfSauceIcon.Value)
         {

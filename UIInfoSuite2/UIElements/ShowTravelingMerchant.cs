@@ -80,7 +80,7 @@ namespace UIInfoSuite2.UIElements
     private void OnRenderingHud(object sender, RenderingHudEventArgs e)
     {
       // Draw icon
-      if (!Game1.eventUp && ShouldDrawIcon())
+      if (UIElementUtils.IsRenderingNormally() && ShouldDrawIcon())
       {
         Point iconPosition = IconHandler.Handler.GetNewIconPosition();
         _travelingMerchantIcon = new ClickableTextureComponent(

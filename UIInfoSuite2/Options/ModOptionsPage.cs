@@ -13,7 +13,7 @@ namespace UIInfoSuite2.Options
   public class ModOptionsPage : IClickableMenu
   {
     private const int visibleSlots = 7;
-    private const int Width = 800;
+    private const int Width = 880;
     private readonly ClickableTextureComponent _downArrow;
     private readonly List<ModOptionsElement> _options;
     private readonly ClickableTextureComponent _scrollBar;

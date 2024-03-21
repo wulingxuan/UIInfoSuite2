@@ -71,7 +71,7 @@ namespace UIInfoSuite2.UIElements
 
       Vector2 tile = Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0 ? gamepadTile : mouseTile;
 
-      if (Game1.currentLocation.IsBuildableLocation())
+      if (Game1.currentLocation != null && Game1.currentLocation.IsBuildableLocation())
       {
         _currentTileBuilding.Value = Game1.currentLocation.getBuildingAt(tile);
       }

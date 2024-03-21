@@ -26,7 +26,7 @@ namespace UIInfoSuite2.UIElements
     private Texture2D _iconSheet;
 
     private Color[] _weatherIconColors;
-    private const int WeatherSheetWidth = 81;
+    private const int WeatherSheetWidth = 15 * 4 + 18 * 3;
     private const int WeatherSheetHeight = 18;
 
     private readonly IModHelper _helper;
@@ -149,44 +149,54 @@ namespace UIInfoSuite2.UIElements
       _iconSheet = new Texture2D(Game1.graphics.GraphicsDevice, WeatherSheetWidth, WeatherSheetHeight);
       _weatherIconColors = new Color[WeatherSheetWidth * WeatherSheetHeight];
       var cursorColors = new Color[Game1.mouseCursors.Width * Game1.mouseCursors.Height];
+      var cursorColors_1_6 = new Color[Game1.mouseCursors_1_6.Width * Game1.mouseCursors_1_6.Height];
       var bounds = new Rectangle(0, 0, Game1.mouseCursors.Width, Game1.mouseCursors.Height);
+      var bounds_1_6 = new Rectangle(0, 0, Game1.mouseCursors_1_6.Width, Game1.mouseCursors_1_6.Height);
       Game1.mouseCursors.GetData(cursorColors);
+      Game1.mouseCursors_1_6.GetData(cursorColors_1_6);
       var subTextureColors = new Color[15 * 15];
 
       // Copy over the bits we want
       // Border from TV screen
       Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(499, 307, 15, 15));
       // Copy to each destination
-      for (var i = 0; i < 3; i++)
+      for (var i = 0; i < 4; i++)
       {
         Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(i * 15, 0, 15, 15));
       }
 
       // Add in expanded sprites for the island parrot
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(45, 0, 15, 15));
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(63, 0, 15, 15));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(60, 0, 15, 15));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(78, 0, 15, 15));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(96, 0, 15, 15));
 
       subTextureColors = new Color[13 * 13];
       // Rainy Weather
       Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(504, 333, 13, 13));
       Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(1, 1, 13, 13));
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(46, 1, 13, 13));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(61, 1, 13, 13));
 
       // Stormy Weather
       Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(426, 346, 13, 13));
       Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(16, 1, 13, 13));
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(64, 1, 13, 13));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(79, 1, 13, 13));
 
       // Snowy Weather
       Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(465, 346, 13, 13));
       Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(31, 1, 13, 13));
 
+      // Green Rain
+      Tools.GetSubTexture(subTextureColors, cursorColors_1_6, bounds_1_6, new Rectangle(178, 363, 13, 13));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(46, 1, 13, 13));
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(97, 1, 13, 13));
+
       // Size of the parrot icon
       subTextureColors = new Color[9 * 14];
       // Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(155, 148, 9, 14));
       Tools.GetSubTexture(subTextureColors, cursorColors, bounds, new Rectangle(146, 149, 9, 14));
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(54, 4, 9, 14), true);
-      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(72, 4, 9, 14), true);
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(69, 4, 9, 14), true);
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(87, 4, 9, 14), true);
+      Tools.SetSubTexture(subTextureColors, _weatherIconColors, WeatherSheetWidth, new Rectangle(105, 4, 9, 14), true);
 
       _iconSheet.SetData(_weatherIconColors);
     }
@@ -229,6 +239,12 @@ namespace UIInfoSuite2.UIElements
           _valleyWeather.HoverText = _helper.SafeGetString(LanguageKeys.SnowNextDay);
           break;
 
+        case Game1.weather_green_rain:
+          _valleyWeather.IsRainyTomorrow = true;
+          _valleyWeather.SpriteLocation = new Rectangle(45, 0, 15, 15);
+          _valleyWeather.HoverText = _helper.SafeGetString(LanguageKeys.RainNextDay);
+          break;
+
         default:
           _valleyWeather.IsRainyTomorrow = false;
           break;
@@ -241,15 +257,22 @@ namespace UIInfoSuite2.UIElements
       {
         case Game1.weather_rain:
           _islandWeather.IsRainyTomorrow = true;
-          _islandWeather.SpriteLocation = new Rectangle(45, 0, 18, 18);
+          _islandWeather.SpriteLocation = new Rectangle(60, 0, 18, 18);
           _islandWeather.HoverText = _helper.SafeGetString(LanguageKeys.IslandRainNextDay);
           break;
 
         case Game1.weather_lightning:
           _islandWeather.IsRainyTomorrow = true;
-          _islandWeather.SpriteLocation = new Rectangle(63, 0, 18, 18);
+          _islandWeather.SpriteLocation = new Rectangle(78, 0, 18, 18);
           _islandWeather.HoverText = _helper.SafeGetString(LanguageKeys.IslandThunderstormNextDay);
           break;
+
+        case Game1.weather_green_rain:
+          _islandWeather.IsRainyTomorrow = true;
+          _islandWeather.SpriteLocation = new Rectangle(96, 0, 18, 18);
+          _islandWeather.HoverText = _helper.SafeGetString(LanguageKeys.IslandRainNextDay);
+          break;
+
         default:
           _islandWeather.IsRainyTomorrow = false;
           break;

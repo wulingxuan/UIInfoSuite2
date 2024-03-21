@@ -371,7 +371,7 @@ namespace UIInfoSuite2.UIElements
 
       _experienceIconRectangle.Value = SkillIconRectangles[(SkillType)currentLevelIndex];
       _experienceFillColor.Value = ExperienceFillColor[(SkillType)currentLevelIndex];
-      _currentSkillLevel.Value = Game1.player.GetSkillLevel(currentLevelIndex);
+      _currentSkillLevel.Value = Game1.player.GetUnmodifiedSkillLevel(currentLevelIndex);
 
       _experienceRequiredToLevel.Value = GetExperienceRequiredToLevel(_currentSkillLevel.Value);
       _experienceFromPreviousLevels.Value = GetExperienceRequiredToLevel(_currentSkillLevel.Value - 1);

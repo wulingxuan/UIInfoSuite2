@@ -19,7 +19,7 @@ body:
     attributes:
       label: Game Version
       description: What version of UIInfoSuite2 are you running?
-      value: "v2.3.0-alpha-2"
+      value: "v2.3.0"
     validations:
       required: true
   - type: dropdown

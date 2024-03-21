@@ -17,7 +17,7 @@ body:
   - type: input
     id: mod-version
     attributes:
-      label: Game Version
+      label: Mod Version
       description: What version of UIInfoSuite2 are you running?
       value: "v2.3.0"
     validations:
@@ -46,6 +46,13 @@ body:
       placeholder: "UI Scale: 100%, Zoom: 100%"
     validations:
       required: true
+  - type: input
+    id: log-link
+    attributes:
+      label: SMAPI Log
+      description: |
+        Be sure to check your SMAPI log for errors or other red text!
+        Upload your log to https://smapi.io/log and share the link here :)
   - type: textarea
     id: description
     attributes:

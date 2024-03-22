@@ -21,11 +21,11 @@
   "SnowNextDay": "Il va neiger demain",
   "IslandRainNextDay": "Il va pleuvoir demain",
   "IslandThunderstormNextDay": "Il va y avoir un orage demain",
-  "DaysUntilToolIsUpgraded": "{0} jours avant que {1} ne termine de s'améliorer",
+  "DaysUntilToolIsUpgraded": "{0} jour(s) avant que {1} ne termine de s'améliorer",
   "ToolIsFinishedBeingUpgraded": "{0} est terminé!",
   "NpcBirthday": "Anniversaire de {0}",
   "RobinBuildingStatus": "Robin aura fini votre nouveau batiment dans {0} jour(s)",
-  "RobinHouseUpgradeStatus": "Robin will finish upgrading your house in {0} day(s)", // TODO
+  "RobinHouseUpgradeStatus": "Robin aura fini d'améliorer ta maison dans {0} jour(s)",
   // Display icons - Foragables
   "CanFindSalmonberry": "Vous pouvez trouver des baies rouges aujourd'hui",
   "CanFindBlackberry": "Vous pouvez trouver des baies noires aujourd'hui",

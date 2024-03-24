@@ -712,7 +712,7 @@ namespace UIInfoSuite2.Options
 
     private int GetButtonXPosition(GameMenu gameMenu)
     {
-      return gameMenu.xPositionOnScreen + gameMenu.width - 120;
+      return gameMenu.xPositionOnScreen + gameMenu.width - 165;
     }
 
     private void DrawButton(GameMenu gameMenu)

@@ -386,7 +386,7 @@ namespace UIInfoSuite2.UIElements
             int teaAge = bush.getAge();
             if (teaAge < 20)
             {
-              string text = new Object("(O)251", 1).DisplayName // 251 <- Tea Sapling
+              string text = ItemRegistry.GetData("(O)251").DisplayName // 251 <- Tea Sapling
                             +
                             $"\n{20 - teaAge} " +
                             _helper.SafeGetString(LanguageKeys.DaysToMature);

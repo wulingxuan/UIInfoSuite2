@@ -18,7 +18,7 @@ body:
     attributes:
       label: Mod Version
       description: What version of UIInfoSuite2 are you running?
-      value: "v2.3.0"
+      placeholder: "v2.3.1"
     validations:
       required: true
   - type: dropdown

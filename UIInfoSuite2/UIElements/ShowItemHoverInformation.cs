@@ -199,7 +199,7 @@ internal class ShowItemHoverInformation : IDisposable
   private void PopulateRequiredBundles()
   {
     _prunedRequiredBundles.Clear();
-    if (!Game1.player.mailReceived.Contains("JojaMember"))
+    if (Game1.player.hasOrWillReceiveMail("canReadJunimoText") && !Game1.player.mailReceived.Contains("JojaMember"))
     {
       foreach (KeyValuePair<string, string> bundle in Game1.netWorldState.Value.BundleData)
       {

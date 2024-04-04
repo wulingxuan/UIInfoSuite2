@@ -361,7 +361,6 @@ internal class ShowCropAndBarrelTime : IDisposable
 
         if (tree.growthStage.Value < 5)
         {
-          // string daysToMatureText = _helper.SafeGetString(LanguageKeys.DaysToMature);
           text = $"{treeName}\nstage {tree.growthStage.Value} / 5";
         }
         else

@@ -349,17 +349,57 @@ internal class ShowCropAndBarrelTime : IDisposable
           }
         }
       }
-      else if (terrain is FruitTree tree)
+      else if (terrain is Tree tree)
       {
-        string itemIdOfFruit =
-          tree.GetData().Fruit.First().ItemId; // TODO 1.6: Might be broken because of more than one item.
-        string? text = ItemRegistry.GetData(itemIdOfFruit).DisplayName;
-        if (tree.daysUntilMature.Value > 0)
+        string treeTypeName = GetTreeTypeName(tree.treeType.Value);
+        string treeText = _helper.SafeGetString(LanguageKeys.Tree);
+        string treeName = $"{treeTypeName} {treeText}";
+
+        string text;
+
+        if (tree.growthStage.Value < 5)
         {
-          text += Environment.NewLine +
-                  tree.daysUntilMature.Value +
-                  " " +
-                  _helper.SafeGetString(LanguageKeys.DaysToMature);
+          // string daysToMatureText = _helper.SafeGetString(LanguageKeys.DaysToMature);
+          text = $"{treeName}\nstage {tree.growthStage.Value} / 5";
+        }
+        else
+        {
+          text = treeName;
+        }
+
+        if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
+        {
+          Vector2 tilePosition =
+            Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(terrain.Tile * Game1.tileSize));
+          overrideX = (int)(tilePosition.X + Utility.ModifyCoordinateForUIScale(32));
+          overrideY = (int)(tilePosition.Y + Utility.ModifyCoordinateForUIScale(32));
+        }
+
+        IClickableMenu.drawHoverText(
+          Game1.spriteBatch,
+          text,
+          Game1.smallFont,
+          overrideX: overrideX,
+          overrideY: overrideY
+        );
+      }
+      else if (terrain is FruitTree fruitTree)
+      {
+        string itemIdOfFruit = fruitTree.GetData().Fruit.First().ItemId; // TODO 1.6: Might be broken because of more than one item.
+        string fruitName = ItemRegistry.GetData(itemIdOfFruit).DisplayName ?? "Unknown";
+        string treeText = _helper.SafeGetString(LanguageKeys.Tree);
+        string treeName = $"{fruitName} {treeText}";
+
+        string text;
+
+        if (fruitTree.daysUntilMature.Value > 0)
+        {
+          string daysToMatureText = _helper.SafeGetString(LanguageKeys.DaysToMature);
+          text = $"{treeName}\n{fruitTree.daysUntilMature.Value} {daysToMatureText}";
+        }
+        else
+        {
+          text = treeName;
         }
 
         if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
@@ -409,6 +449,18 @@ internal class ShowCropAndBarrelTime : IDisposable
           }
         }
       }
+    }
+  }
+
+  private string GetTreeTypeName(string treeType)
+  {
+    switch (treeType)
+    {
+      case "1": return "Oak";
+      case "2": return "Maple";
+      case "3": return "Pine";
+      case "13": return "Mystic";
+      default: return "Unknown";
     }
   }
 

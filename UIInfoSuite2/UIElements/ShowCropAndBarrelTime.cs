@@ -354,9 +354,13 @@ internal class ShowCropAndBarrelTime : IDisposable
         string treeTypeName = GetTreeTypeName(tree.treeType.Value);
         string treeText = _helper.SafeGetString(LanguageKeys.Tree);
         string treeName = $"{treeTypeName} {treeText}";
+        if (tree.stump.Value)
+        {
+          treeName += " (stump)";
+        }
 
         string text;
-
+ 
         if (tree.growthStage.Value < 5)
         {
           // string daysToMatureText = _helper.SafeGetString(LanguageKeys.DaysToMature);
@@ -459,8 +463,14 @@ internal class ShowCropAndBarrelTime : IDisposable
       case "1": return "Oak";
       case "2": return "Maple";
       case "3": return "Pine";
+      case "6": return "Palm";
+      case "7": return "Mushroom";
+      case "8": return "Mahogany";
+      case "10": return "Green Rain Type 1";
+      case "11": return "Green Rain Type 2";
+      case "12": return "Green Rain Type 3";
       case "13": return "Mystic";
-      default: return "Unknown";
+      default: return $"Unknown (#{treeType})";
     }
   }
 

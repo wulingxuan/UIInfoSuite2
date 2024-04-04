@@ -53,7 +53,7 @@ internal class ShowCropAndBarrelTime : IDisposable
   /// <summary>Raised after the game state is updated (≈60 times per second).</summary>
   /// <param name="sender">The event sender.</param>
   /// <param name="e">The event arguments.</param>
-  private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
+  private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
   {
     if (!e.IsMultipleOf(4))
     {
@@ -112,7 +112,7 @@ internal class ShowCropAndBarrelTime : IDisposable
   /// </summary>
   /// <param name="sender">The event sender.</param>
   /// <param name="e">The event arguments.</param>
-  private void OnRenderingHud(object sender, RenderingHudEventArgs e)
+  private void OnRenderingHud(object? sender, RenderingHudEventArgs e)
   {
     if (Game1.activeClickableMenu != null)
     {
@@ -138,9 +138,9 @@ internal class ShowCropAndBarrelTime : IDisposable
         currentTileBuilding.buildingChests.Count > inputKey &&
         !currentTileBuilding.buildingChests[inputKey].isEmpty())
     {
-      var wheatCount = 0;
-      var beetCount = 0;
-      var unmilledriceCount = 0;
+      int wheatCount = 0;
+      int beetCount = 0;
+      int unmilledriceCount = 0;
 
       foreach (Item item in currentTileBuilding.buildingChests[inputKey].Items)
       {
@@ -221,10 +221,9 @@ internal class ShowCropAndBarrelTime : IDisposable
 
         hoverText.AppendLine(currentTile.heldObject.Value.DisplayName);
 
-        if (currentTile is Cask)
+        if (currentTile is Cask cask)
         {
-          var currentCask = currentTile as Cask;
-          hoverText.Append((int)(currentCask.daysToMature.Value / currentCask.agingRate.Value))
+          hoverText.Append((int)(cask.daysToMature.Value / cask.agingRate.Value))
                    .Append(" " + _helper.SafeGetString(LanguageKeys.DaysToMature));
         }
         else
@@ -290,12 +289,11 @@ internal class ShowCropAndBarrelTime : IDisposable
     }
     else if (terrain != null)
     {
-      if (terrain is HoeDirt)
+      if (terrain is HoeDirt hoeDirt)
       {
-        var hoeDirt = terrain as HoeDirt;
         if (hoeDirt.crop != null && !hoeDirt.crop.dead.Value)
         {
-          var num = 0;
+          int num = 0;
 
           if (hoeDirt.crop.fullyGrown.Value && hoeDirt.crop.dayOfCurrentPhase.Value > 0)
           {
@@ -303,7 +301,7 @@ internal class ShowCropAndBarrelTime : IDisposable
           }
           else
           {
-            for (var i = 0; i < hoeDirt.crop.phaseDays.Count - 1; ++i)
+            for (int i = 0; i < hoeDirt.crop.phaseDays.Count - 1; ++i)
             {
               if (hoeDirt.crop.currentPhase.Value == i)
               {
@@ -360,7 +358,7 @@ internal class ShowCropAndBarrelTime : IDisposable
         }
 
         string text;
- 
+
         if (tree.growthStage.Value < 5)
         {
           // string daysToMatureText = _helper.SafeGetString(LanguageKeys.DaysToMature);
@@ -456,7 +454,8 @@ internal class ShowCropAndBarrelTime : IDisposable
     }
   }
 
-  private string GetTreeTypeName(string treeType)
+  // See: https://stardewvalleywiki.com/Trees
+  private static string GetTreeTypeName(string treeType)
   {
     switch (treeType)
     {

@@ -8,6 +8,7 @@ public static class LanguageKeys
   public const string Hours = "Hours";
   public const string Minutes = "Minutes";
   public const string ReadyToHarvest = "ReadyToHarvest";
+  public const string With = "With";
   public const string Tree = "Tree";
   public const string TodaysRecipe = "TodaysRecipe";
   public const string TravelingMerchantIsInTown = "TravelingMerchantIsInTown";

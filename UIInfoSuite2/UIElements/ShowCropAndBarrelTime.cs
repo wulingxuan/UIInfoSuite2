@@ -328,6 +328,13 @@ internal class ShowCropAndBarrelTime : IDisposable
               hoverText.Append(_helper.SafeGetString(LanguageKeys.ReadyToHarvest));
             }
 
+            if (!string.IsNullOrEmpty(hoeDirt.fertilizer.Value))
+            {
+              string fertilizerName = ItemRegistry.GetData(hoeDirt.fertilizer.Value).DisplayName ?? "Unknown Fertilizer";
+              string withText = _helper.SafeGetString(LanguageKeys.With);
+              hoverText.Append($"\n({withText} {fertilizerName})");
+            }
+
             if (Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0)
             {
               Vector2 tilePosition = Utility.ModifyCoordinatesForUIScale(
@@ -362,6 +369,10 @@ internal class ShowCropAndBarrelTime : IDisposable
         if (tree.growthStage.Value < 5)
         {
           text = $"{treeName}\nstage {tree.growthStage.Value} / 5";
+          if (tree.fertilized.Value)
+          {
+            text += $"\n(fertilized)";
+          }
         }
         else
         {

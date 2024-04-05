@@ -479,6 +479,7 @@ internal class ShowCropAndBarrelTime : IDisposable
       case "6": return "Palm";
       case "7": return "Mushroom";
       case "8": return "Mahogany";
+      case "9": return "Palm (Jungle)";
       case "10": return "Green Rain Type 1";
       case "11": return "Green Rain Type 2";
       case "12": return "Green Rain Type 3";

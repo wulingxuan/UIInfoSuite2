@@ -371,7 +371,8 @@ internal class ShowCropAndBarrelTime : IDisposable
           text = $"{treeName}\nstage {tree.growthStage.Value} / 5";
           if (tree.fertilized.Value)
           {
-            text += $"\n(fertilized)";
+            string fertilizedText = _helper.SafeGetString(LanguageKeys.Fertilized);
+            text += $"\n({fertilizedText})";
           }
         }
         else

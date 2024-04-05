@@ -20,6 +20,8 @@ namespace UIInfoSuite2.UIElements;
 
 internal class ShowCropAndBarrelTime : IDisposable
 {
+  private const int MAX_TREE_GROWTH_STAGE = 5;
+
   private readonly PerScreen<Object> _currentTile = new();
   private readonly PerScreen<Building> _currentTileBuilding = new();
   private readonly IModHelper _helper;
@@ -366,9 +368,9 @@ internal class ShowCropAndBarrelTime : IDisposable
 
         string text;
 
-        if (tree.growthStage.Value < 5)
+        if (tree.growthStage.Value < MAX_TREE_GROWTH_STAGE)
         {
-          text = $"{treeName}\nstage {tree.growthStage.Value} / 5";
+          text = $"{treeName}\nstage {tree.growthStage.Value} / {MAX_TREE_GROWTH_STAGE}";
           if (tree.fertilized.Value)
           {
             string fertilizedText = _helper.SafeGetString(LanguageKeys.Fertilized);

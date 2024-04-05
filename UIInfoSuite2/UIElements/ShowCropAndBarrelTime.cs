@@ -371,6 +371,7 @@ internal class ShowCropAndBarrelTime : IDisposable
         if (tree.growthStage.Value < MAX_TREE_GROWTH_STAGE)
         {
           text = $"{treeName}\nstage {tree.growthStage.Value} / {MAX_TREE_GROWTH_STAGE}";
+
           if (tree.fertilized.Value)
           {
             string fertilizedText = _helper.SafeGetString(LanguageKeys.Fertilized);

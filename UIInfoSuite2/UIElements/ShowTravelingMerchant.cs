@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using UIInfoSuite2.Infrastructure;
@@ -108,9 +109,7 @@ public class ShowTravelingMerchant : IDisposable
 #region Logic
   private void UpdateTravelingMerchant()
   {
-    int dayOfWeek = Game1.dayOfMonth % 7;
-    _travelingMerchantIsHere = dayOfWeek == 0 || dayOfWeek == 5;
-
+    _travelingMerchantIsHere = ((Forest)Game1.getLocationFromName(nameof(Forest))).ShouldTravelingMerchantVisitToday();
     _travelingMerchantIsVisited = false;
   }
 

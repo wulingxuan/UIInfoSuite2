@@ -130,7 +130,7 @@ internal class ShowCropAndBarrelTime : IDisposable
 
     // draw hover tooltip
     var inputKey = 0;
-    // TODO1.6 <= The tooltip for Mill says:
+    // TODO 1.6 <= The tooltip for Mill says:
     //     The Mill class is only used to preserve data from old save files. All mills were converted into plain Building instances based on the rules in Data/Buildings.
     //     The input and output items are now stored in Building.buildingChests with the 'Input' and 'Output' keys respectively.
     //   Perhaps this was written when the 'buildingChests' property was a dictionary.  Now it's a list, and there's no property on Chest or ChestData
@@ -289,11 +289,11 @@ internal class ShowCropAndBarrelTime : IDisposable
         );
       }
     }
-    else if (terrain != null)
+    else if (terrain is not null)
     {
       if (terrain is HoeDirt hoeDirt)
       {
-        if (hoeDirt.crop != null && !hoeDirt.crop.dead.Value)
+        if (hoeDirt.crop is not null && !hoeDirt.crop.dead.Value)
         {
           int num = 0;
 
@@ -354,6 +354,18 @@ internal class ShowCropAndBarrelTime : IDisposable
               overrideY: overrideY
             );
           }
+        }
+        else if (!string.IsNullOrEmpty(hoeDirt.fertilizer.Value))
+        {
+          string fertilizerName = ItemRegistry.GetData(hoeDirt.fertilizer.Value).DisplayName ?? "Unknown Fertilizer";
+          string hoverText = fertilizerName;
+          IClickableMenu.drawHoverText(
+            Game1.spriteBatch,
+            hoverText,
+            Game1.smallFont,
+            overrideX: overrideX,
+            overrideY: overrideY
+          );
         }
       }
       else if (terrain is Tree tree)

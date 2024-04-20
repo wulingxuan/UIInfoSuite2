@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +17,7 @@ namespace UIInfoSuite2.UIElements;
 internal class ShowItemEffectRanges : IDisposable
 {
 #region Properties
-  private readonly PerScreen<List<Point>> _effectiveArea = new(() => new List<Point>());
+  private readonly PerScreen<HashSet<Point>> _effectiveArea = new(() => new HashSet<Point>());
 
   private readonly Mutex _mutex = new();
 
@@ -185,7 +186,15 @@ internal class ShowItemEffectRanges : IDisposable
          * and now it's the tile that's being hovered over.
          * That new behavior might not be intended and might get rolled back.
          */
-        AddTilesToHighlightedArea(currentItem.GetSprinklerTiles());
+
+        // Move tiles to 0, 0 and then offset by the correct tile.
+        IEnumerable<Vector2> unplacedSprinklerTiles = currentItem.GetSprinklerTiles();
+        if (currentItem.TileLocation != validTile)
+        {
+          unplacedSprinklerTiles = unplacedSprinklerTiles.Select(tile => tile - currentItem.TileLocation + validTile);
+        }
+
+        AddTilesToHighlightedArea(unplacedSprinklerTiles);
 
         similarObjects = GetSimilarObjectsInLocation("sprinkler");
         foreach (Object next in similarObjects)

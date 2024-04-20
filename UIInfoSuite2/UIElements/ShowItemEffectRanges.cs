@@ -17,7 +17,7 @@ namespace UIInfoSuite2.UIElements;
 internal class ShowItemEffectRanges : IDisposable
 {
 #region Properties
-  private readonly PerScreen<List<Point>> _effectiveArea = new(() => new List<Point>());
+  private readonly PerScreen<HashSet<Point>> _effectiveArea = new(() => new HashSet<Point>());
 
   private readonly Mutex _mutex = new();
 
@@ -191,7 +191,7 @@ internal class ShowItemEffectRanges : IDisposable
         IEnumerable<Vector2> unplacedSprinklerTiles = currentItem.GetSprinklerTiles();
         if (currentItem.TileLocation != validTile)
         {
-          unplacedSprinklerTiles = unplacedSprinklerTiles.Select(tile => (tile - currentItem.TileLocation) + validTile);
+          unplacedSprinklerTiles = unplacedSprinklerTiles.Select(tile => tile - currentItem.TileLocation + validTile);
         }
 
         AddTilesToHighlightedArea(unplacedSprinklerTiles);

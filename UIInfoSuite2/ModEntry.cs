@@ -27,6 +27,8 @@ public class ModEntry : Mod
     helper.Events.GameLoop.Saved += OnSaved;
     helper.Events.GameLoop.GameLaunched += OnGameLaunched;
     helper.Events.Display.Rendering += IconHandler.Handler.Reset;
+
+    IconHandler.Handler.IsQuestLogPermanent = helper.ModRegistry.IsLoaded("MolsonCAD.DeluxeJournal");
   }
 #endregion
 

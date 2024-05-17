@@ -208,6 +208,16 @@ internal class ShowItemEffectRanges : IDisposable
         arrayToUse = GetDistanceArray(ObjectsWithDistance.Beehouse);
         AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
       }
+      else if (itemName.IndexOf("mushroom log", StringComparison.OrdinalIgnoreCase) >= 0)
+      {
+        arrayToUse = GetDistanceArray(ObjectsWithDistance.MushroomLog);
+        AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+      }
+      else if (itemName.IndexOf("mossy seed", StringComparison.OrdinalIgnoreCase) >= 0)
+      {
+        arrayToUse = GetDistanceArray(ObjectsWithDistance.MossySeed);
+        AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+      }
     }
   }
 
@@ -290,7 +300,9 @@ internal class ShowItemEffectRanges : IDisposable
     Sprinkler,
     QualitySprinkler,
     IridiumSprinkler,
-    PrismaticSprinkler
+    PrismaticSprinkler,
+    MushroomLog,
+    MossySeed
   }
 
   private int[][] GetDistanceArray(ObjectsWithDistance type, bool hasPressureNozzle = false, Object? instance = null)
@@ -317,6 +329,10 @@ internal class ShowItemEffectRanges : IDisposable
           : GetCircularMask(100, maxDisplaySquareRadius: 2);
       case ObjectsWithDistance.PrismaticSprinkler:
         return GetCircularMask(3.69, Math.Sqrt(18), false);
+      case ObjectsWithDistance.MushroomLog:
+        return GetCircularMask(100, maxDisplaySquareRadius: 7);
+      case ObjectsWithDistance.MossySeed:
+        return GetCircularMask(100, maxDisplaySquareRadius: 5);
       default:
         return null;
     }

@@ -370,7 +370,7 @@ internal class ShowCropAndBarrelTime : IDisposable
       }
       else if (terrain is Tree tree)
       {
-        string treeTypeName = GetTreeTypeName(tree.treeType.Value);
+        string treeTypeName = GetTreeTypeName(_helper, tree.treeType.Value);
         string treeText = _helper.SafeGetString(LanguageKeys.Tree);
         string treeName = $"{treeTypeName} {treeText}";
         if (tree.stump.Value)
@@ -382,7 +382,7 @@ internal class ShowCropAndBarrelTime : IDisposable
 
         if (tree.growthStage.Value < MAX_TREE_GROWTH_STAGE)
         {
-          text = $"{treeName}\nstage {tree.growthStage.Value} / {MAX_TREE_GROWTH_STAGE}";
+          text = $"{treeName}\n" + _helper.SafeGetString(LanguageKeys.stage) + $"{tree.growthStage.Value} / {MAX_TREE_GROWTH_STAGE}";
 
           if (tree.fertilized.Value)
           {
@@ -481,21 +481,21 @@ internal class ShowCropAndBarrelTime : IDisposable
   }
 
   // See: https://stardewvalleywiki.com/Trees
-  private static string GetTreeTypeName(string treeType)
+  private static string GetTreeTypeName(IModHelper _helper, string treeType)
   {
     switch (treeType)
     {
-      case "1": return "Oak";
-      case "2": return "Maple";
-      case "3": return "Pine";
-      case "6": return "Palm";
-      case "7": return "Mushroom";
-      case "8": return "Mahogany";
-      case "9": return "Palm (Jungle)";
-      case "10": return "Green Rain Type 1";
-      case "11": return "Green Rain Type 2";
-      case "12": return "Green Rain Type 3";
-      case "13": return "Mystic";
+      case "1": return _helper.SafeGetString(LanguageKeys.Oak);
+      case "2": return _helper.SafeGetString(LanguageKeys.Maple);
+      case "3": return _helper.SafeGetString(LanguageKeys.Pine);
+      case "6": return _helper.SafeGetString(LanguageKeys.Palm);
+      case "7": return _helper.SafeGetString(LanguageKeys.Mushroom);
+      case "8": return _helper.SafeGetString(LanguageKeys.Mahogany);
+      case "9": return _helper.SafeGetString(LanguageKeys.PalmJungle);
+      case "10": return _helper.SafeGetString(LanguageKeys.GreenRainType1);
+      case "11": return _helper.SafeGetString(LanguageKeys.GreenRainType2);
+      case "12": return _helper.SafeGetString(LanguageKeys.GreenRainType3);
+      case "13": return _helper.SafeGetString(LanguageKeys.Mystic);
       default: return $"Unknown (#{treeType})";
     }
   }

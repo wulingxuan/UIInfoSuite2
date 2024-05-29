@@ -1,17 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.TerrainFeatures;
-using UIInfoSuite2.Infrastructure;
+using UIInfoSuite2.Infrastructure.Helpers;
 
 namespace UIInfoSuite2.Compatibility.CustomBush;
-
-public record CustomBushDroppedItem(string BushId, int NextDayToProduce, ParsedItemData Item, float Chance)
-{
-  public bool ReadyToPick => Game1.dayOfMonth == NextDayToProduce;
-}
 
 internal static class CustomBushExtensions
 {
@@ -38,64 +32,26 @@ internal static class CustomBushExtensions
     return true;
   }
 
-  public static List<CustomBushDroppedItem> GetCustomBushDropItems(
+  public static List<PossibleDroppedItem> GetCustomBushDropItems(
     this ICustomBushApi api,
     ICustomBush bush,
     string? id,
-    bool includeToday = true
+    bool includeToday = false
   )
   {
-    List<CustomBushDroppedItem> items = new();
-
     if (id == null || string.IsNullOrEmpty(id))
     {
-      return items;
+      return new List<PossibleDroppedItem>();
     }
 
     api.TryGetDrops(id, out IList<ICustomBushDrop>? drops);
-    if (drops == null)
+    return drops == null
+      ? new List<PossibleDroppedItem>()
+      : DropsHelper.GetGenericDropItems(drops, id, includeToday, bush.DisplayName, BushDropConverter);
+
+    DropInfo BushDropConverter(ICustomBushDrop input)
     {
-      return items;
+      return new DropInfo(input.Condition, input.Chance, input.ItemId);
     }
-
-    foreach (ICustomBushDrop drop in drops)
-    {
-      int? nextDay = string.IsNullOrEmpty(drop.Condition)
-        ? Game1.dayOfMonth + (includeToday ? 0 : 1)
-        : Tools.GetNextDayFromCondition(drop.Condition, includeToday);
-      int? lastDay = Tools.GetLastDayFromCondition(drop.Condition);
-      // TODO this assumes that the only item in drop is ItemId. If RandomItemId is used, this will not work.
-      ParsedItemData? itemData = ItemRegistry.GetData(drop.ItemId);
-      if (!nextDay.HasValue)
-      {
-        if (!lastDay.HasValue)
-        {
-          ModEntry.MonitorObject.Log(
-            $"Couldn't parse the next day the bush {bush.DisplayName} will drop {drop.ItemId}. Condition: {drop.Condition}. Please report this error.",
-            LogLevel.Error
-          );
-        }
-
-        continue;
-      }
-
-      if (itemData == null)
-      {
-        ModEntry.MonitorObject.Log(
-          $"Couldn't parse the correct item {bush.DisplayName} will drop. ItemId: {drop.ItemId}. Please report this error.",
-          LogLevel.Error
-        );
-        continue;
-      }
-
-      if (Game1.dayOfMonth == nextDay.Value && !includeToday)
-      {
-        continue;
-      }
-
-      items.Add(new CustomBushDroppedItem(id, nextDay.Value, itemData, drop.Chance));
-    }
-
-    return items;
   }
 }

@@ -597,15 +597,15 @@ internal class ShowCropAndBarrelTime : IDisposable
       string bushName = ItemRegistry.GetData("(O)251").DisplayName;
       bool inProductionPeriod = Game1.dayOfMonth >= 22;
       int daysUntilProductionPeriod = inProductionPeriod ? 0 : 22 - Game1.dayOfMonth;
-      List<CustomBushDroppedItem> droppedItems = new();
+      List<PossibleDroppedItem> droppedItems = new();
 
       if (bush.tileSheetOffset.Value == 1)
       {
-        droppedItems.Add(new CustomBushDroppedItem("", Game1.dayOfMonth, ItemRegistry.GetData("(O)815"), 1.0f));
+        droppedItems.Add(new PossibleDroppedItem(Game1.dayOfMonth, ItemRegistry.GetData("(O)815"), 1.0f));
       }
       else if (Game1.dayOfMonth >= 21 && Game1.dayOfMonth < 28)
       {
-        droppedItems.Add(new CustomBushDroppedItem("", Game1.dayOfMonth + 1, ItemRegistry.GetData("(O)815"), 1.0f));
+        droppedItems.Add(new PossibleDroppedItem(Game1.dayOfMonth + 1, ItemRegistry.GetData("(O)815"), 1.0f));
       }
 
       if (ApiManager.GetApi(ModCompat.CustomBush, out ICustomBushApi? customBushApi))
@@ -621,11 +621,11 @@ internal class ShowCropAndBarrelTime : IDisposable
 
           if (customBushData.GetShakeOffItemIfReady(bush, out ParsedItemData? shakeOffItemData))
           {
-            droppedItems.Add(new CustomBushDroppedItem(id, Game1.dayOfMonth, shakeOffItemData, 1.0f));
+            droppedItems.Add(new PossibleDroppedItem(Game1.dayOfMonth, shakeOffItemData, 1.0f, id));
           }
           else
           {
-            droppedItems = customBushApi.GetCustomBushDropItems(customBushData, id, false);
+            droppedItems = customBushApi.GetCustomBushDropItems(customBushData, id);
           }
         }
       }

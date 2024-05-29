@@ -10,6 +10,8 @@
   "Days": "days",
   "Hours": "hours",
   "Minutes": "minutes",
+  "MachineProcessing": "Processing",
+  "MachineDone": "Done",
   //Harvest
   "DaysToMature": "days to mature",
   "ReadyToHarvest": "Ready to harvest!",
@@ -17,8 +19,9 @@
   "Fertilized": "fertilized",
   "DoesNotProduceThisSeason": "Does not produce this season",
   //Tree
+  "Stump": "stump",
   "Tree": "Tree",
-  "stage": "stage",
+  "stage": "Stage",
   "Oak": "Oak",
   "Maple": "Maple",
   "Pine": "Pine",

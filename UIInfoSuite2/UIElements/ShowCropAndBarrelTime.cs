@@ -39,12 +39,11 @@ internal class ShowCropAndBarrelTime : IDisposable
     DetailRenderers.CropRender, DetailRenderers.TreeRender, DetailRenderers.FruitTreeRender, DetailRenderers.TeaBush
   };
 
+  private readonly PerScreen<TerrainFeature?> _currentTerrain = new();
   private readonly PerScreen<Object?> _currentTile = new();
   private readonly PerScreen<Building?> _currentTileBuilding = new();
+
   private readonly IModHelper _helper;
-
-
-  private readonly PerScreen<TerrainFeature?> _terrain = new();
 
   public ShowCropAndBarrelTime(IModHelper helper)
   {
@@ -82,7 +81,7 @@ internal class ShowCropAndBarrelTime : IDisposable
 
     _currentTileBuilding.Value = null;
     _currentTile.Value = null;
-    _terrain.Value = null;
+    _currentTerrain.Value = null;
 
     Vector2 gamepadTile = Game1.player.CurrentTool != null
       ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize)
@@ -108,23 +107,23 @@ internal class ShowCropAndBarrelTime : IDisposable
 
     if (Game1.currentLocation.terrainFeatures?.TryGetValue(tile, out TerrainFeature? terrain) ?? false)
     {
-      _terrain.Value = terrain;
+      _currentTerrain.Value = terrain;
     }
 
     // Make sure that _terrain is null before overwriting it because Tea Saplings are added to terrainFeatures and not IndoorPot.bush
-    if (_terrain.Value != null || _currentTile.Value is not IndoorPot pot)
+    if (_currentTerrain.Value != null || _currentTile.Value is not IndoorPot pot)
     {
       return;
     }
 
     if (pot.hoeDirt.Value != null)
     {
-      _terrain.Value = pot.hoeDirt.Value;
+      _currentTerrain.Value = pot.hoeDirt.Value;
     }
 
     if (pot.bush.Value != null)
     {
-      _terrain.Value = pot.bush.Value;
+      _currentTerrain.Value = pot.bush.Value;
     }
   }
 
@@ -145,7 +144,7 @@ internal class ShowCropAndBarrelTime : IDisposable
     Vector2 tile = Vector2.Zero;
     Building? currentTileBuilding = _currentTileBuilding.Value;
     Object? currentTile = _currentTile.Value;
-    TerrainFeature? terrain = _terrain.Value;
+    TerrainFeature? terrain = _currentTerrain.Value;
 
     int overrideX = -1;
     int overrideY = -1;

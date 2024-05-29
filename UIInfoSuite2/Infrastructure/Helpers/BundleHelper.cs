@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -9,6 +8,8 @@ using StardewValley.Menus;
 using SObject = StardewValley.Object;
 
 namespace UIInfoSuite2.Infrastructure.Helpers;
+
+using BundleIngredientsCache = Dictionary<string, List<List<int>>>;
 
 public record BundleRequiredItem(string Name, int BannerWidth, int Id, string QualifiedId, int Quality);
 
@@ -55,18 +56,21 @@ internal static class BundleHelper
     }
 
     var communityCenter = Game1.RequireLocation<CommunityCenter>("CommunityCenter");
-    FieldInfo? bundleIngredientInfoField = communityCenter.GetType()
-                                                          .GetField(
-                                                            "bundlesIngredientsInfo",
-                                                            BindingFlags.Instance | BindingFlags.NonPublic
-                                                          );
-    object? bundlesIngredientsInfoValue = bundleIngredientInfoField?.GetValue(communityCenter);
 
-    if (bundlesIngredientsInfoValue is not Dictionary<string, List<List<int>>> bundlesIngredientsInfo)
+    BundleIngredientsCache bundlesIngredientsInfo;
+    try
+    {
+      IReflectedField<BundleIngredientsCache> bundlesIngredientsInfoField =
+        ModEntry.Reflection.GetField<BundleIngredientsCache>(communityCenter, "bundlesIngredientsInfo");
+      bundlesIngredientsInfo = bundlesIngredientsInfoField.GetValue();
+    }
+    catch (Exception e)
     {
       ModEntry.MonitorObject.Log("Failed to get bundles info", LogLevel.Error);
+      ModEntry.MonitorObject.Log(e.ToString(), LogLevel.Error);
       return null;
     }
+
 
     BundleRequiredItem? output;
     List<List<int>>? bundleRequiredItemsList;

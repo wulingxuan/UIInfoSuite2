@@ -13,9 +13,23 @@ namespace UIInfoSuite2;
 
 public class ModEntry : Mod
 {
+  private static SkipIntro _skipIntro; // Needed so GC won't throw away object with subscriptions
+  private static ModConfig _modConfig;
+
+  private static EventHandler<ButtonsChangedEventArgs> _calendarAndQuestKeyBindingsHandler;
+
+  private ModOptions _modOptions;
+  private ModOptionsPageHandler _modOptionsPageHandler;
+
+  public static IReflectionHelper Reflection { get; private set; } = null!;
+
+  public static IMonitor MonitorObject { get; private set; } = null!;
+  public static DynamicGameAssetsEntry DGA { get; private set; }
+
 #region Entry
   public override void Entry(IModHelper helper)
   {
+    Reflection = helper.Reflection;
     MonitorObject = Monitor;
     DGA = new DynamicGameAssetsEntry(Helper, Monitor);
     I18n.Init(helper.Translation);
@@ -81,20 +95,6 @@ public class ModEntry : Mod
     );
   }
 #endregion
-
-#region Properties
-  public static IMonitor MonitorObject { get; private set; }
-  public static DynamicGameAssetsEntry DGA { get; private set; }
-
-  private static SkipIntro _skipIntro; // Needed so GC won't throw away object with subscriptions
-  private static ModConfig _modConfig;
-
-  private ModOptions _modOptions;
-  private ModOptionsPageHandler _modOptionsPageHandler;
-
-  private static EventHandler<ButtonsChangedEventArgs> _calendarAndQuestKeyBindingsHandler;
-#endregion
-
 
 #region Event subscriptions
   private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)

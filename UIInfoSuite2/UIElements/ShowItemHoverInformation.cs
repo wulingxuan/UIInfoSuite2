@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -120,6 +119,7 @@ internal class ShowItemHoverInformation : IDisposable
   /// </summary>
   /// <param name="sender">The event sender.</param>
   /// <param name="e">The event arguments.</param>
+  [EventPriority(EventPriority.Low)]
   private void OnRenderedActiveMenu(object? sender, RenderedActiveMenuEventArgs e)
   {
     if (Game1.activeClickableMenu != null)

@@ -154,37 +154,6 @@ internal class ShowItemHoverInformation : IDisposable
                            !Game1.player.basicShipped.ContainsKey(hoveredObject.ItemId) &&
                            hoveredObject.Type != "Fish" &&
                            hoveredObject.Category != Object.skillBooksCategory;
-      if (notShippedYet &&
-          hoveredObject != null &&
-          ModEntry.DGA.IsCustomObject(hoveredObject, out DynamicGameAssetsHelper? dgaHelper))
-      {
-        // NB For DGA items, Game1.player.basicShipped.ContainsKey(hoveredObject.ParentSheetIndex) will always be false
-        //    and Object.countsForShippedCollection bypasses the type and category checks
-        try
-        {
-          // For shipping, DGA patches:
-          // - CollectionsPage()
-          // - ShippingMenu.parseItems()
-          // - StardewValley.Object.countsForShippedCollection()
-          // - StardewValley.Object.isIndexOkForBasicShippedCategory()
-          // But it doesn't patch Utility.getFarmerItemsShippedPercent() which determines if the requirements for the achievement are met.
-          // This means that DGA items do not (yet) count for the "Full Shipment" achievement even though they appear in the collections page.
-
-          // Nonetheless, show the icon if that item is still hidden in the collections page.
-          string dgaId = dgaHelper.GetDgaObjectFakeId(hoveredObject);
-          bool inCollectionsPage = Object.isPotentialBasicShipped(dgaId, hoveredObject.Category, hoveredObject.Type);
-
-          notShippedYet = inCollectionsPage && !Game1.player.basicShipped.ContainsKey(dgaId);
-        }
-        catch (Exception e)
-        {
-          ModEntry.MonitorObject.LogOnce(
-            $"An error occured while checking if the DGA item {hoveredObject.Name} has been shipped.",
-            LogLevel.Error
-          );
-          ModEntry.MonitorObject.Log(e.ToString(), LogLevel.Debug);
-        }
-      }
 
       string? requiredBundleName = null;
       Color? bundleColor = null;
@@ -196,6 +165,7 @@ internal class ShowItemHoverInformation : IDisposable
           requiredBundleName = bundleDisplayData.Name;
 
           // TODO cache these colors so we're not doing it every time
+
           bundleColor = BundleHelper.GetRealColorFromIndex(bundleDisplayData.Id)?.Desaturate(0.35f);
         }
       }

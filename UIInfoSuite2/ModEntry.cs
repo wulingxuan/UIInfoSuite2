@@ -24,14 +24,12 @@ public class ModEntry : Mod
   public static IReflectionHelper Reflection { get; private set; } = null!;
 
   public static IMonitor MonitorObject { get; private set; } = null!;
-  public static DynamicGameAssetsEntry DGA { get; private set; }
 
 #region Entry
   public override void Entry(IModHelper helper)
   {
     Reflection = helper.Reflection;
     MonitorObject = Monitor;
-    DGA = new DynamicGameAssetsEntry(Helper, Monitor);
     I18n.Init(helper.Translation);
 
     _skipIntro = new SkipIntro(helper.Events);

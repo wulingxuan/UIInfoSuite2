@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData.Crops;
 using StardewValley.GameData.FruitTrees;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using UIInfoSuite2.Compatibility;
 using SObject = StardewValley.Object;
 
 namespace UIInfoSuite2.Infrastructure;
@@ -43,45 +41,20 @@ public static class Tools
 
   public static SObject? GetHarvest(Item item)
   {
-    if (item is SObject { Category: SObject.SeedsCategory } seedsObject && seedsObject.ItemId != Crop.mixedSeedsId)
+    if (item is not SObject { Category: SObject.SeedsCategory } seedsObject || seedsObject.ItemId == Crop.mixedSeedsId)
     {
-      if (seedsObject.IsFruitTreeSapling() && FruitTree.TryGetData(item.ItemId, out FruitTreeData? fruitTreeData))
-      {
-        // TODO support multiple items returned
-        return ItemRegistry.Create<SObject>(fruitTreeData.Fruit[0].ItemId);
-      }
+      return null;
+    }
 
-      if (ModEntry.DGA.IsCustomObject(item, out DynamicGameAssetsHelper? dgaHelper))
-      {
-        try
-        {
-          return dgaHelper.GetSeedsHarvest(item);
-        }
-        catch (Exception e)
-        {
-          string? itemId = null;
-          try
-          {
-            itemId = dgaHelper.GetFullId(item);
-          }
-          catch (Exception catchException)
-          {
-            ModEntry.MonitorObject.Log(catchException.ToString());
-          }
+    if (seedsObject.IsFruitTreeSapling() && FruitTree.TryGetData(item.ItemId, out FruitTreeData? fruitTreeData))
+    {
+      // TODO support multiple items returned
+      return ItemRegistry.Create<SObject>(fruitTreeData.Fruit[0].ItemId);
+    }
 
-          ModEntry.MonitorObject.LogOnce(
-            $"An error occured while fetching the harvest for {itemId ?? "unknownItem"}",
-            LogLevel.Error
-          );
-          ModEntry.MonitorObject.Log(e.ToString(), LogLevel.Debug);
-          return null;
-        }
-      }
-
-      if (Crop.TryGetData(item.ItemId, out CropData cropData) && cropData.HarvestItemId is not null)
-      {
-        return ItemRegistry.Create<SObject>(cropData.HarvestItemId);
-      }
+    if (Crop.TryGetData(item.ItemId, out CropData cropData) && cropData.HarvestItemId is not null)
+    {
+      return ItemRegistry.Create<SObject>(cropData.HarvestItemId);
     }
 
     return null;

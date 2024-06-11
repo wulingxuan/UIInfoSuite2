@@ -257,6 +257,8 @@ internal class ShowCropAndBarrelTime : IDisposable
         return I18n.GreenRainType3();
       case "13":
         return I18n.Mystic();
+      case "Lumisteria.MtVapius.Birchtree":
+        return I18n.VmvBirch();
       default:
         return $"Unknown (#{treeType})";
     }

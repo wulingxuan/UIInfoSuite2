@@ -28,9 +28,9 @@ public class ModEntry : Mod
 #region Entry
   public override void Entry(IModHelper helper)
   {
+    I18n.Init(helper.Translation);
     Reflection = helper.Reflection;
     MonitorObject = Monitor;
-    I18n.Init(helper.Translation);
 
     _skipIntro = new SkipIntro(helper.Events);
     _modConfig = Helper.ReadConfig<ModConfig>();

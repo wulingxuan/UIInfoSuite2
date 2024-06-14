@@ -22,10 +22,17 @@ internal class ShowItemEffectRanges : IDisposable
   private readonly Mutex _mutex = new();
 
   private readonly IModHelper _helper;
-#endregion
+
+  private bool Enabled { get; set; }
+  private bool ButtonControlShow { get; set; }
+
+  private bool ButtonLeftControl { get; set; }
+  private bool ButtonLeftAlt { get; set; }
+
+  #endregion
 
 
-#region Lifecycle
+  #region Lifecycle
   public ShowItemEffectRanges(IModHelper helper)
   {
     _helper = helper;
@@ -38,19 +45,31 @@ internal class ShowItemEffectRanges : IDisposable
 
   public void ToggleOption(bool showItemEffectRanges)
   {
+    Enabled = showItemEffectRanges;
+
     _helper.Events.Display.RenderingHud -= OnRenderingHud;
     _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
+    _helper.Events.Input.ButtonPressed -= OnButtonPressed;
+    _helper.Events.Input.ButtonReleased -= OnButtonReleased;
 
     if (showItemEffectRanges)
     {
       _helper.Events.Display.RenderingHud += OnRenderingHud;
       _helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+      _helper.Events.Input.ButtonPressed += OnButtonPressed;
+      _helper.Events.Input.ButtonReleased += OnButtonReleased;
     }
   }
-#endregion
+
+  public void ToggleButtonControlShowOption(bool buttonControlShow)
+  {
+    ButtonControlShow = buttonControlShow;
+    ToggleOption(Enabled);
+  }
+  #endregion
 
 
-#region Event subscriptions
+  #region Event subscriptions
   private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
   {
     if (!e.IsMultipleOf(4))
@@ -114,10 +133,39 @@ internal class ShowItemEffectRanges : IDisposable
       }
     }
   }
-#endregion
+
+  private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+  {
+    switch (e.Button)
+    {
+      case SButton.LeftAlt:
+        ButtonLeftAlt = true;
+        break;
+      case SButton.LeftControl:
+        ButtonLeftControl = true;
+        break;
+      default:
+        break;
+    }
+  }
+  private void OnButtonReleased(object? sender, ButtonReleasedEventArgs e)
+  {
+    switch (e.Button)
+    {
+      case SButton.LeftAlt:
+        ButtonLeftAlt = false;
+        break;
+      case SButton.LeftControl:
+        ButtonLeftControl = false;
+        break;
+      default:
+        break;
+    }
+  }
+  #endregion
 
 
-#region Logic
+  #region Logic
   private void UpdateEffectiveArea()
   {
     int[][] arrayToUse;
@@ -139,7 +187,88 @@ internal class ShowItemEffectRanges : IDisposable
     }
 
     // Every other item is here
-    if (Game1.player.CurrentItem is Object currentItem && currentItem.isPlaceable())
+    if (ButtonControlShow && ButtonLeftControl)
+    {
+      Vector2 gamepadTile = Game1.player.CurrentTool != null
+              ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize)
+              : Utility.snapToInt(Game1.player.GetGrabTile());
+      Vector2 mouseTile = Game1.currentCursorTile;
+      Vector2 tile = Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0 ? gamepadTile : mouseTile;
+      if (Game1.currentLocation.Objects?.TryGetValue(tile, out StardewValley.Object? currentObject) ?? false)
+      {
+        if (currentObject != null)
+        {
+          Vector2 currentTile = Game1.GetPlacementGrabTile();
+          Game1.isCheckingNonMousePlacement = !Game1.IsPerformingMousePlacement();
+          Vector2 validTile = Utility.snapToInt(
+                                  Utility.GetNearbyValidPlacementPosition(
+                                  Game1.player,
+                                  Game1.currentLocation,
+                                  currentObject,
+                                  (int)currentTile.X * Game1.tileSize,
+                                  (int)currentTile.Y * Game1.tileSize
+                                  )
+                              ) /
+                              Game1.tileSize;
+          Game1.isCheckingNonMousePlacement = false;
+
+          if (currentObject.Name.IndexOf("arecrow", StringComparison.OrdinalIgnoreCase) >= 0)
+          {
+            string itemName = currentObject.Name;
+            arrayToUse = itemName.Contains("eluxe")
+                ? GetDistanceArray(ObjectsWithDistance.DeluxeScarecrow, false, currentObject)
+                : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, currentObject);
+            AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+
+            if (ButtonLeftAlt)
+            {
+              similarObjects = GetSimilarObjectsInLocation("arecrow");
+              foreach (Object next in similarObjects)
+              {
+                arrayToUse = next.Name.IndexOf("eluxe", StringComparison.OrdinalIgnoreCase) >= 0
+                    ? GetDistanceArray(ObjectsWithDistance.DeluxeScarecrow, false, next)
+                    : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, next);
+                AddTilesToHighlightedArea(arrayToUse, (int)next.TileLocation.X, (int)next.TileLocation.Y);
+              }
+            }
+          }
+          else if (currentObject.Name.IndexOf("sprinkler", StringComparison.OrdinalIgnoreCase) >= 0)
+          {
+            IEnumerable<Vector2> unplacedSprinklerTiles = currentObject.GetSprinklerTiles();
+            if (currentObject.TileLocation != validTile)
+            {
+              unplacedSprinklerTiles = unplacedSprinklerTiles.Select(tile => tile - currentObject.TileLocation + validTile);
+            }
+            AddTilesToHighlightedArea(unplacedSprinklerTiles);
+
+            if (ButtonLeftAlt)
+            {
+              similarObjects = GetSimilarObjectsInLocation("sprinkler");
+              foreach (Object next in similarObjects)
+              {
+                AddTilesToHighlightedArea(next.GetSprinklerTiles());
+              }
+            }
+          }
+          else if (currentObject.Name.IndexOf("bee house", StringComparison.OrdinalIgnoreCase) >= 0)
+          {
+            arrayToUse = GetDistanceArray(ObjectsWithDistance.Beehouse);
+            AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+          }
+          else if (currentObject.Name.IndexOf("mushroom log", StringComparison.OrdinalIgnoreCase) >= 0)
+          {
+            arrayToUse = GetDistanceArray(ObjectsWithDistance.MushroomLog);
+            AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+          }
+          else if (currentObject.Name.IndexOf("mossy seed", StringComparison.OrdinalIgnoreCase) >= 0)
+          {
+            arrayToUse = GetDistanceArray(ObjectsWithDistance.MossySeed);
+            AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
+          }
+        }
+      }
+    }
+    else if (Game1.player.CurrentItem is Object currentItem && currentItem.isPlaceable())
     {
       string itemName = currentItem.Name;
 

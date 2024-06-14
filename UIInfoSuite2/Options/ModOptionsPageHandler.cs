@@ -242,13 +242,22 @@ internal class ModOptionsPageHandler : IDisposable
         v => options.ShowCropAndBarrelTooltip = v
       )
     );
-    _optionsElements.Add(
-      new ModOptionsCheckbox(
+    var ScarecrowAndSprinklerRangeIcon = new ModOptionsCheckbox(
         _helper.SafeGetString(nameof(options.ShowItemEffectRanges)),
         whichOption++,
         showScarecrowAndSprinklerRange.ToggleOption,
         () => options.ShowItemEffectRanges,
         v => options.ShowItemEffectRanges = v
+      );
+    _optionsElements.Add(ScarecrowAndSprinklerRangeIcon);
+    _optionsElements.Add(
+      new ModOptionsCheckbox(
+        _helper.SafeGetString(nameof(options.ButtonControlShow)),
+        whichOption++,
+        showScarecrowAndSprinklerRange.ToggleButtonControlShowOption,
+        () => options.ButtonControlShow,
+        v => options.ButtonControlShow = v,
+        ScarecrowAndSprinklerRangeIcon
       )
     );
     _optionsElements.Add(

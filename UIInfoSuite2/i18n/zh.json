@@ -1,4 +1,4 @@
-{
+﻿{
   // GUI - Game Menu
   "OptionsTabTooltip": "UI Info Suite 2 选项",
   //GUI - Billboard
@@ -16,6 +16,7 @@
   "With": "已使用",
   "Fertilized": "已施肥",
   //Tree
+  "Stump": "树桩",
   "Tree": "树",
   "stage": "阶段",
   "Oak": "橡",
@@ -41,7 +42,7 @@
   "ToolIsFinishedBeingUpgraded": "{0}完成了！",
   "NpcBirthday": "{0}的生日",
   "RobinBuildingStatus": "罗宾将在 {0} 天内完成你的新建筑",
-  "RobinHouseUpgradeStatus": "罗宾将在 {0} 天内完成升级你的房子", 
+  "RobinHouseUpgradeStatus": "罗宾将在 {0} 天内完成升级你的房子",
   // Display icons - Foragables
   "CanFindSalmonberry": "今天可以找到美洲大树莓",
   "CanFindBlackberry": "今天可以找到黑莓",
@@ -68,6 +69,7 @@
   "HideAnimalPetOnMaxFriendship": "在动物达到最大心情时隐藏",
   "ShowCropAndBarrelTooltip": "显示作物与桶的剩余时间",
   "ShowItemEffectRanges": "显示稻草人与洒水器的范围",
+  "ButtonControlShow": "按下leftctrl显示单个，同时按下leftalt显示全部",
   "ShowExtraItemInformation": "鼠标悬停时显示物品信息",
   "ShowHarvestPricesInShop": "在购买页面显示收获价格",
   //Settings - Tabs info

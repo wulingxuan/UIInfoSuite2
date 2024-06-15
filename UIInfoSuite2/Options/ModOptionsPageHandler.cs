@@ -98,15 +98,17 @@ internal class ModOptionsPageHandler : IDisposable
       locationOfTownsfolk,
       showWhenAnimalNeedsPet,
       showCalendarAndBillboardOnGameMenuButton,
-      showCropAndBarrelTime,
+      showScarecrowAndSprinklerRange,
       showItemHoverInformation,
-      showTravelingMerchant,
-      showRainyDayIcon,
       shopHarvestPrices,
       showQueenOfSauceIcon,
+      showTravelingMerchant,
+      showRainyDayIcon,
+      showCropAndBarrelTime,
       showToolUpgradeStatus,
       showRobinBuildingStatusIcon,
-      showSeasonalBerry
+      showSeasonalBerry,
+      showTodaysGift
     };
 
     var whichOption = 1;

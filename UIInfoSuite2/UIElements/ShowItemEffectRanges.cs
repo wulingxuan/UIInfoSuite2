@@ -49,15 +49,11 @@ internal class ShowItemEffectRanges : IDisposable
 
     _helper.Events.Display.RenderingHud -= OnRenderingHud;
     _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
-    _helper.Events.Input.ButtonPressed -= OnButtonPressed;
-    _helper.Events.Input.ButtonReleased -= OnButtonReleased;
 
     if (showItemEffectRanges)
     {
       _helper.Events.Display.RenderingHud += OnRenderingHud;
       _helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
-      _helper.Events.Input.ButtonPressed += OnButtonPressed;
-      _helper.Events.Input.ButtonReleased += OnButtonReleased;
     }
   }
 
@@ -65,6 +61,14 @@ internal class ShowItemEffectRanges : IDisposable
   {
     ButtonControlShow = buttonControlShow;
     ToggleOption(Enabled);
+
+    _helper.Events.Input.ButtonPressed -= OnButtonPressed;
+    _helper.Events.Input.ButtonReleased -= OnButtonReleased;
+    if (buttonControlShow)
+    {
+      _helper.Events.Input.ButtonPressed += OnButtonPressed;
+      _helper.Events.Input.ButtonReleased += OnButtonReleased;
+    }
   }
   #endregion
 

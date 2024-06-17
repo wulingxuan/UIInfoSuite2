@@ -57,19 +57,20 @@ internal class ModOptionsPageHandler : IDisposable
 
   public ModOptionsPageHandler(IModHelper helper, ModOptions options, bool showPersonalConfigButton)
   {
-    if (showPersonalConfigButton)
-    {
-      helper.Events.Input.ButtonPressed += OnButtonPressed;
-      helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
-      helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
-      helper.Events.Display.RenderingActiveMenu += OnRenderingMenu;
-      helper.Events.Display.RenderedActiveMenu += OnRenderedMenu;
-      GameRunner.instance.Window.ClientSizeChanged += OnWindowClientSizeChanged;
-      helper.Events.Display.WindowResized += OnWindowResized;
-    }
-
     _helper = helper;
     _showPersonalConfigButton = showPersonalConfigButton;
+
+    if (showPersonalConfigButton)
+    {
+      _helper.Events.Input.ButtonPressed += OnButtonPressed;
+      _helper.Events.GameLoop.UpdateTicking += OnUpdateTicking;
+      _helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+      _helper.Events.Display.RenderingActiveMenu += OnRenderingMenu;
+      _helper.Events.Display.RenderedActiveMenu += OnRenderedMenu;
+      GameRunner.instance.Window.ClientSizeChanged += OnWindowClientSizeChanged;
+      _helper.Events.Display.WindowResized += OnWindowResized;
+    }
+
 
     var luckOfDay = new LuckOfDay(helper);
     var showBirthdayIcon = new ShowBirthdayIcon(helper);
@@ -370,6 +371,13 @@ internal class ModOptionsPageHandler : IDisposable
     {
       item.Dispose();
     }
+    _helper.Events.Input.ButtonPressed -= OnButtonPressed;
+    _helper.Events.GameLoop.UpdateTicking -= OnUpdateTicking;
+    _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
+    _helper.Events.Display.RenderingActiveMenu -= OnRenderingMenu;
+    _helper.Events.Display.RenderedActiveMenu -= OnRenderedMenu;
+    GameRunner.instance.Window.ClientSizeChanged -= OnWindowClientSizeChanged;
+    _helper.Events.Display.WindowResized -= OnWindowResized;
   }
 
   private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)

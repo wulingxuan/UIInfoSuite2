@@ -116,7 +116,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(new ModOptionsElement($"UI Info Suite 2 {GetVersionString(helper)}"));
 
     var luckIcon = new ModOptionsCheckbox(
-      _helper.SafeGetString(nameof(options.ShowLuckIcon)),
+      I18n.ShowLuckIcon(),
       whichOption++,
       luckOfDay.ToggleOption,
       () => options.ShowLuckIcon,
@@ -125,7 +125,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(luckIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowExactValue)),
+        I18n.ShowExactValue(),
         whichOption++,
         luckOfDay.ToggleShowExactValueOption,
         () => options.ShowExactValue,
@@ -135,7 +135,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowLevelUpAnimation)),
+        I18n.ShowLevelUpAnimation(),
         whichOption++,
         experienceBar.ToggleLevelUpAnimation,
         () => options.ShowLevelUpAnimation,
@@ -144,7 +144,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowExperienceBar)),
+        I18n.ShowExperienceBar(),
         whichOption++,
         experienceBar.ToggleShowExperienceBar,
         () => options.ShowExperienceBar,
@@ -153,7 +153,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.AllowExperienceBarToFadeOut)),
+        I18n.AllowExperienceBarToFadeOut(),
         whichOption++,
         experienceBar.ToggleExperienceBarFade,
         () => options.AllowExperienceBarToFadeOut,
@@ -162,7 +162,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowExperienceGain)),
+        I18n.ShowExperienceGain(),
         whichOption++,
         experienceBar.ToggleShowExperienceGain,
         () => options.ShowExperienceGain,
@@ -173,7 +173,7 @@ internal class ModOptionsPageHandler : IDisposable
     {
       _optionsElements.Add(
         new ModOptionsCheckbox(
-          _helper.SafeGetString(nameof(options.ShowLocationOfTownsPeople)),
+          I18n.ShowLocationOfTownsPeople(),
           whichOption++,
           locationOfTownsfolk.ToggleShowNPCLocationsOnMap,
           () => options.ShowLocationOfTownsPeople,
@@ -183,7 +183,7 @@ internal class ModOptionsPageHandler : IDisposable
     }
 
     var birthdayIcon = new ModOptionsCheckbox(
-      _helper.SafeGetString(nameof(options.ShowBirthdayIcon)),
+      I18n.ShowBirthdayIcon(),
       whichOption++,
       showBirthdayIcon.ToggleOption,
       () => options.ShowBirthdayIcon,
@@ -192,7 +192,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(birthdayIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.HideBirthdayIfFullFriendShip)),
+        I18n.HideBirthdayIfFullFriendShip(),
         whichOption++,
         showBirthdayIcon.ToggleDisableOnMaxFriendshipOption,
         () => options.HideBirthdayIfFullFriendShip,
@@ -202,7 +202,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowHeartFills)),
+        I18n.ShowHeartFills(),
         whichOption++,
         showAccurateHearts.ToggleOption,
         () => options.ShowHeartFills,
@@ -210,7 +210,7 @@ internal class ModOptionsPageHandler : IDisposable
       )
     );
     var animalPetIcon = new ModOptionsCheckbox(
-      _helper.SafeGetString(nameof(options.ShowAnimalsNeedPets)),
+      I18n.ShowAnimalsNeedPets(),
       whichOption++,
       showWhenAnimalNeedsPet.ToggleOption,
       () => options.ShowAnimalsNeedPets,
@@ -219,7 +219,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(animalPetIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.HideAnimalPetOnMaxFriendship)),
+        I18n.HideAnimalPetOnMaxFriendship(),
         whichOption++,
         showWhenAnimalNeedsPet.ToggleDisableOnMaxFriendshipOption,
         () => options.HideAnimalPetOnMaxFriendship,
@@ -229,7 +229,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.DisplayCalendarAndBillboard)),
+        I18n.DisplayCalendarAndBillboard(),
         whichOption++,
         showCalendarAndBillboardOnGameMenuButton.ToggleOption,
         () => options.DisplayCalendarAndBillboard,
@@ -238,7 +238,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowCropAndBarrelTooltip)),
+        I18n.ShowCropAndBarrelTooltip(),
         whichOption++,
         showCropAndBarrelTime.ToggleOption,
         () => options.ShowCropAndBarrelTooltip,
@@ -246,7 +246,7 @@ internal class ModOptionsPageHandler : IDisposable
       )
     );
     var ScarecrowAndSprinklerRangeIcon = new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowItemEffectRanges)),
+        I18n.ShowItemEffectRanges(),
         whichOption++,
         showScarecrowAndSprinklerRange.ToggleOption,
         () => options.ShowItemEffectRanges,
@@ -255,7 +255,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(ScarecrowAndSprinklerRangeIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ButtonControlShow)),
+        I18n.ButtonControlShow(),
         whichOption++,
         showScarecrowAndSprinklerRange.ToggleButtonControlShowOption,
         () => options.ButtonControlShow,
@@ -265,7 +265,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowExtraItemInformation)),
+        I18n.ShowExtraItemInformation(),
         whichOption++,
         showItemHoverInformation.ToggleOption,
         () => options.ShowExtraItemInformation,
@@ -273,7 +273,7 @@ internal class ModOptionsPageHandler : IDisposable
       )
     );
     var travellingMerchantIcon = new ModOptionsCheckbox(
-      _helper.SafeGetString(nameof(options.ShowTravelingMerchant)),
+      I18n.ShowTravelingMerchant(),
       whichOption++,
       showTravelingMerchant.ToggleOption,
       () => options.ShowTravelingMerchant,
@@ -282,7 +282,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(travellingMerchantIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.HideMerchantWhenVisited)),
+        I18n.HideMerchantWhenVisited(),
         whichOption++,
         showTravelingMerchant.ToggleHideWhenVisitedOption,
         () => options.HideMerchantWhenVisited,
@@ -292,7 +292,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowRainyDay)),
+        I18n.ShowRainyDay(),
         whichOption++,
         showRainyDayIcon.ToggleOption,
         () => options.ShowRainyDay,
@@ -301,7 +301,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowHarvestPricesInShop)),
+        I18n.ShowHarvestPricesInShop(),
         whichOption++,
         shopHarvestPrices.ToggleOption,
         () => options.ShowHarvestPricesInShop,
@@ -310,7 +310,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowWhenNewRecipesAreAvailable)),
+        I18n.ShowWhenNewRecipesAreAvailable(),
         whichOption++,
         showQueenOfSauceIcon.ToggleOption,
         () => options.ShowWhenNewRecipesAreAvailable,
@@ -319,7 +319,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowToolUpgradeStatus)),
+        I18n.ShowToolUpgradeStatus(),
         whichOption++,
         showToolUpgradeStatus.ToggleOption,
         () => options.ShowToolUpgradeStatus,
@@ -328,7 +328,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowRobinBuildingStatusIcon)),
+        I18n.ShowRobinBuildingStatusIcon(),
         whichOption++,
         showRobinBuildingStatusIcon.ToggleOption,
         () => options.ShowRobinBuildingStatusIcon,
@@ -336,7 +336,7 @@ internal class ModOptionsPageHandler : IDisposable
       )
     );
     var seasonalBerryIcon = new ModOptionsCheckbox(
-      _helper.SafeGetString(nameof(options.ShowSeasonalBerry)),
+      I18n.ShowSeasonalBerry(),
       whichOption++,
       showSeasonalBerry.ToggleOption,
       () => options.ShowSeasonalBerry,
@@ -345,7 +345,7 @@ internal class ModOptionsPageHandler : IDisposable
     _optionsElements.Add(seasonalBerryIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowSeasonalBerryHazelnut)),
+        I18n.ShowSeasonalBerryHazelnut(),
         whichOption++,
         showSeasonalBerry.ToggleHazelnutOption,
         () => options.ShowSeasonalBerryHazelnut,
@@ -355,7 +355,7 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
-        _helper.SafeGetString(nameof(options.ShowTodaysGifts)),
+        I18n.ShowTodaysGifts(),
         whichOption++,
         showTodaysGift.ToggleOption,
         () => options.ShowTodaysGifts,
@@ -614,7 +614,8 @@ internal class ModOptionsPageHandler : IDisposable
       // Draw our tab's hover text
       if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(), Game1.getMouseY()) == true)
       {
-        Translation tooltip = _helper.Translation.Get(LanguageKeys.OptionsTabTooltip).Default("UI Info Mod Options");
+        string tooltip = I18n.OptionsTabTooltip();
+        if (string.IsNullOrEmpty(tooltip)) { tooltip = "UI Info Mod Options"; };
         IClickableMenu.drawHoverText(Game1.spriteBatch, tooltip, Game1.smallFont);
 
         if (!gameMenu.hoverText.Equals(""))

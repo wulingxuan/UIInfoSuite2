@@ -10,6 +10,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Network;
+using UIInfoSuite2.Options;
 using Object = StardewValley.Object;
 
 namespace UIInfoSuite2.UIElements;
@@ -23,11 +24,10 @@ internal class ShowItemEffectRanges : IDisposable
 
   private readonly IModHelper _helper;
 
-  private bool Enabled { get; set; }
   private bool ButtonControlShow { get; set; }
 
-  private bool ButtonLeftControl { get; set; }
-  private bool ButtonLeftAlt { get; set; }
+  private bool ButtonShowOneRange { get; set; }
+  private bool ButtonShowAllRanges { get; set; }
 
   #endregion
 
@@ -45,7 +45,7 @@ internal class ShowItemEffectRanges : IDisposable
 
   public void ToggleOption(bool showItemEffectRanges)
   {
-    Enabled = showItemEffectRanges;
+    ToggleButtonControlShowOption(showItemEffectRanges);
 
     _helper.Events.Display.RenderingHud -= OnRenderingHud;
     _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;
@@ -60,14 +60,11 @@ internal class ShowItemEffectRanges : IDisposable
   public void ToggleButtonControlShowOption(bool buttonControlShow)
   {
     ButtonControlShow = buttonControlShow;
-    ToggleOption(Enabled);
 
-    _helper.Events.Input.ButtonPressed -= OnButtonPressed;
-    _helper.Events.Input.ButtonReleased -= OnButtonReleased;
+    _helper.Events.Input.ButtonsChanged -= OnButtonChanged;
     if (buttonControlShow)
     {
-      _helper.Events.Input.ButtonPressed += OnButtonPressed;
-      _helper.Events.Input.ButtonReleased += OnButtonReleased;
+      _helper.Events.Input.ButtonsChanged += OnButtonChanged;
     }
   }
   #endregion
@@ -102,9 +99,10 @@ internal class ShowItemEffectRanges : IDisposable
     if (Game1.activeClickableMenu == null && UIElementUtils.IsRenderingNormally())
     {
       UpdateEffectiveArea();
+      if (ButtonShowOneRange) ButtonShowOneRange = false;
+      if (ButtonShowAllRanges) ButtonShowAllRanges = false;
     }
   }
-
 
   private void OnRenderingHud(object? sender, RenderingHudEventArgs e)
   {
@@ -138,32 +136,21 @@ internal class ShowItemEffectRanges : IDisposable
     }
   }
 
-  private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+  private void OnButtonChanged(object? sender, ButtonsChangedEventArgs e)
   {
-    switch (e.Button)
+    if (ModEntry._modConfig != null)
     {
-      case SButton.LeftAlt:
-        ButtonLeftAlt = true;
-        break;
-      case SButton.LeftControl:
-        ButtonLeftControl = true;
-        break;
-      default:
-        break;
-    }
-  }
-  private void OnButtonReleased(object? sender, ButtonReleasedEventArgs e)
-  {
-    switch (e.Button)
-    {
-      case SButton.LeftAlt:
-        ButtonLeftAlt = false;
-        break;
-      case SButton.LeftControl:
-        ButtonLeftControl = false;
-        break;
-      default:
-        break;
+      if (Context.IsPlayerFree)
+      {
+        if (ModEntry._modConfig.ShowOneRange.IsDown())
+        {
+          ButtonShowOneRange = true;
+        }
+        if (ModEntry._modConfig.ShowAllRange.IsDown())
+        {
+          ButtonShowAllRanges = true;
+        }
+      }
     }
   }
   #endregion
@@ -191,7 +178,7 @@ internal class ShowItemEffectRanges : IDisposable
     }
 
     // Every other item is here
-    if (ButtonControlShow && ButtonLeftControl)
+    if (ButtonControlShow && (ButtonShowOneRange || ButtonShowAllRanges))
     {
       Vector2 gamepadTile = Game1.player.CurrentTool != null
               ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize)
@@ -224,7 +211,7 @@ internal class ShowItemEffectRanges : IDisposable
                 : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, currentObject);
             AddTilesToHighlightedArea(arrayToUse, (int)validTile.X, (int)validTile.Y);
 
-            if (ButtonLeftAlt)
+            if (ButtonShowAllRanges)
             {
               similarObjects = GetSimilarObjectsInLocation("arecrow");
               foreach (Object next in similarObjects)
@@ -245,7 +232,7 @@ internal class ShowItemEffectRanges : IDisposable
             }
             AddTilesToHighlightedArea(unplacedSprinklerTiles);
 
-            if (ButtonLeftAlt)
+            if (ButtonShowAllRanges)
             {
               similarObjects = GetSimilarObjectsInLocation("sprinkler");
               foreach (Object next in similarObjects)

@@ -10,6 +10,12 @@
   "Keybinds.OpenCalendarKeybind.Tooltip": "通过热键打开日历。",
   "Keybinds.OpenQuestBoardKeybind.DisplayedName": "打开任务板",
   "Keybinds.OpenQuestBoardKeybind.Tooltip": "通过热键打开任务板。",
+  "Keybinds.Subtitle.ShowRange.displayedName": "显示物品效果范围",
+  "Keybinds.Subtitle.ShowRange.Tooltip": "例如：稻草人、洒水器、祝尼魔屋、蜂房、蘑菇树桩和长满苔藓的种子。",
+  "Keybinds.ShowOneRange.DisplayedName": "显示单个范围",
+  "Keybinds.ShowOneRange.Tooltip": "当鼠标移至需要显示的物品上时，显示范围。",
+  "Keybinds.ShowAllRange.DisplayedName": "显示全部范围",
+  "Keybinds.ShowAllRange.Tooltip": "当鼠标移至需要显示的物品上时，显示所有范围。",
   //GUI - Billboard
   "Billboard": "布告栏",
   "Calendar": "日历",

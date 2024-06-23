@@ -20,6 +20,7 @@ internal class ShowItemEffectRanges : IDisposable
 #region Properties
   private readonly PerScreen<List<Point>> _effectiveAreaCurrent = new(() => new List<Point>());
   private readonly PerScreen<HashSet<Point>> _effectiveAreaOther = new(() => new HashSet<Point>());
+  private readonly PerScreen<HashSet<Point>> _effectiveAreaIntersection = new (() => new HashSet<Point>());
 
   private readonly Mutex _mutex = new();
 
@@ -91,6 +92,7 @@ internal class ShowItemEffectRanges : IDisposable
       {
         _effectiveAreaCurrent.Value.Clear();
         _effectiveAreaOther.Value.Clear();
+        _effectiveAreaIntersection.Value.Clear();
       }
       finally
       {
@@ -101,6 +103,7 @@ internal class ShowItemEffectRanges : IDisposable
     if (Game1.activeClickableMenu == null && UIElementUtils.IsRenderingNormally())
     {
       UpdateEffectiveArea();
+      GetOverlapValue();
       if (ButtonShowOneRange) ButtonShowOneRange = false;
       if (ButtonShowAllRanges) ButtonShowAllRanges = false;
     }
@@ -112,7 +115,7 @@ internal class ShowItemEffectRanges : IDisposable
     {
       try
       {
-        foreach (Point point in _effectiveAreaCurrent.Value)
+        foreach (Point point in _effectiveAreaOther.Value)
         {
           var position = new Vector2(
             point.X * Utility.ModifyCoordinateFromUIScale(Game1.tileSize),
@@ -130,7 +133,7 @@ internal class ShowItemEffectRanges : IDisposable
             0.01f
           );
         }
-        foreach (Point point in _effectiveAreaOther.Value)
+        foreach (Point point in _effectiveAreaIntersection.Value)
         {
           var position = new Vector2(
             point.X * Utility.ModifyCoordinateFromUIScale(Game1.tileSize),
@@ -140,7 +143,7 @@ internal class ShowItemEffectRanges : IDisposable
             Game1.mouseCursors,
             Utility.ModifyCoordinatesForUIScale(Game1.GlobalToLocal(Utility.ModifyCoordinatesForUIScale(position))),
             new Rectangle(194, 388, 16, 16),
-            Color.White * 0.7f,
+            Color.Red * 0.7f,
             0.0f,
             Vector2.Zero,
             Utility.ModifyCoordinateForUIScale(Game1.pixelZoom),
@@ -453,6 +456,17 @@ internal class ShowItemEffectRanges : IDisposable
     return result;
   }
 
+  /// <summary>
+  /// Extract the overlapping area.
+  /// </summary>
+  private void GetOverlapValue()
+  {
+    PerScreen<HashSet<Point>> temp = new PerScreen<HashSet<Point>>();
+    _effectiveAreaIntersection.Value = _effectiveAreaOther.Value.Intersect(_effectiveAreaCurrent.Value).ToHashSet();
+    temp.Value = _effectiveAreaCurrent.Value.Except(_effectiveAreaOther.Value).ToHashSet();
+    _effectiveAreaOther.Value = _effectiveAreaOther.Value.Except(_effectiveAreaCurrent.Value).ToHashSet();
+    _effectiveAreaOther.Value = _effectiveAreaOther.Value.Union(temp.Value).ToHashSet();
+  }
 #region Distance map
   private enum ObjectsWithDistance
   {

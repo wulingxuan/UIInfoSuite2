@@ -105,5 +105,8 @@
   "ShowSeasonalBerry": "显示季节采摘物",
   "ShowSeasonalBerryHazelnut": "显示树上的榛子",
   //Others
-  "LevelUp": "升级"
+  "LevelUp": "升级",
+  "TrackOnMap": "在地图上追踪",
+  "UnknownCrop": "未知的作物"
+
 }

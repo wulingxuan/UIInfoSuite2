@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -266,7 +266,7 @@ internal class LocationOfTownsfolk : IDisposable
 
       if (checkbox.bounds.Contains(Game1.getMouseX(), Game1.getMouseY()))
       {
-        IClickableMenu.drawHoverText(Game1.spriteBatch, "Track on map", Game1.dialogueFont);
+        IClickableMenu.drawHoverText(Game1.spriteBatch, I18n.TrackOnMap(), Game1.dialogueFont);
       }
     }
   }

@@ -21,7 +21,7 @@ internal class LocationOfTownsfolk : IDisposable
 {
 #region Properties
   private SocialPage _socialPage = null!;
-  private string[] _friendNames = null!;
+  private List<string> _friendNames = new();
   private readonly List<NPC> _townsfolk = new();
   private readonly List<OptionsCheckbox> _checkboxes = new();
 
@@ -137,13 +137,16 @@ internal class LocationOfTownsfolk : IDisposable
         if (menu is SocialPage socialPage)
         {
           _socialPage = socialPage;
-          _friendNames = socialPage.GetAllNpcs().Select(n => n.Name).ToArray();
+          foreach (var SocialEntries in socialPage.SocialEntries)
+          {
+            _friendNames.Add(SocialEntries.InternalName);
+          }
           break;
         }
       }
-
+      
       _checkboxes.Clear();
-      for (var i = 0; i < _friendNames.Length; i++)
+      for (var i = 0; i < _friendNames.Count; i++)
       {
         string friendName = _friendNames[i];
         var checkbox = new OptionsCheckbox("", i);
@@ -211,7 +214,7 @@ internal class LocationOfTownsfolk : IDisposable
       )!;
     var yOffset = 0;
 
-    for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
+    for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Count; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
       checkbox.bounds.X = Game1.activeClickableMenu.xPositionOnScreen - 60;

@@ -132,6 +132,7 @@ internal class LocationOfTownsfolk : IDisposable
   {
     if (Game1.activeClickableMenu is GameMenu gameMenu)
     {
+      _friendNames.Clear();
       foreach (IClickableMenu? menu in gameMenu.pages)
       {
         if (menu is SocialPage socialPage)

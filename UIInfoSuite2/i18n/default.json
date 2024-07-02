@@ -18,6 +18,8 @@
   "ReadyToHarvest": "Ready to harvest!",
   "With": "with",
   "Fertilized": "fertilized",
+  "Watered": "Watered",
+  "NotWatered": "Not Watered",
   "DoesNotProduceThisSeason": "Does not produce this season",
   //Tree
   "Stump": "stump",

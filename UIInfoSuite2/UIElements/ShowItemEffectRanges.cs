@@ -27,6 +27,7 @@ internal class ShowItemEffectRanges : IDisposable
   private readonly IModHelper _helper;
 
   private bool ButtonControlShow { get; set; }
+  private bool ShowBombRange { get; set; }
 
   private bool ButtonShowOneRange { get; set; }
   private bool ButtonShowAllRanges { get; set; }
@@ -68,6 +69,10 @@ internal class ShowItemEffectRanges : IDisposable
     {
       _helper.Events.Input.ButtonsChanged += OnButtonChanged;
     }
+  }
+  public void ToggleShowBombRangeOption(bool showBombRange)
+  {
+    ShowBombRange = showBombRange;
   }
   #endregion
 
@@ -370,6 +375,23 @@ internal class ShowItemEffectRanges : IDisposable
         arrayToUse = GetDistanceArray(ObjectsWithDistance.MossySeed);
         AddTilesToHighlightedArea(arrayToUse, false, (int)validTile.X, (int)validTile.Y);
       }
+      else if (ShowBombRange && itemName.IndexOf("Bomb", StringComparison.OrdinalIgnoreCase) >= 0)
+      {
+        if (itemName.Contains("ega"))
+        {
+          arrayToUse = GetDistanceArray(ObjectsWithDistance.MegaBomb);
+        }
+        else if(itemName.Contains("herry"))
+        {
+          arrayToUse = GetDistanceArray(ObjectsWithDistance.CherryBomb);
+        }
+        else
+        {
+          arrayToUse = GetDistanceArray(ObjectsWithDistance.Bomb);
+        }
+
+        AddTilesToHighlightedArea(arrayToUse, false, (int)validTile.X, (int)validTile.Y);
+      }
     }
   }
 
@@ -479,7 +501,10 @@ internal class ShowItemEffectRanges : IDisposable
     IridiumSprinkler,
     PrismaticSprinkler,
     MushroomLog,
-    MossySeed
+    MossySeed,
+    CherryBomb,
+    Bomb,
+    MegaBomb
   }
 
   private int[][] GetDistanceArray(ObjectsWithDistance type, bool hasPressureNozzle = false, Object? instance = null)
@@ -510,6 +535,12 @@ internal class ShowItemEffectRanges : IDisposable
         return GetCircularMask(100, maxDisplaySquareRadius: 7);
       case ObjectsWithDistance.MossySeed:
         return GetCircularMask(100, maxDisplaySquareRadius: 5);
+      case ObjectsWithDistance.CherryBomb:
+        return GetCircularMask(3.39);
+      case ObjectsWithDistance.Bomb:
+        return GetCircularMask(5.52);
+      case ObjectsWithDistance.MegaBomb:
+        return GetCircularMask(7.45);
       default:
         return null;
     }

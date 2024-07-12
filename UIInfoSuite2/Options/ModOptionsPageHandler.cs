@@ -265,6 +265,16 @@ internal class ModOptionsPageHandler : IDisposable
     );
     _optionsElements.Add(
       new ModOptionsCheckbox(
+        I18n.ShowBombRange(),
+        whichOption++,
+        showScarecrowAndSprinklerRange.ToggleShowBombRangeOption,
+        () => options.ShowBombRange,
+        v => options.ShowBombRange = v,
+        ScarecrowAndSprinklerRangeIcon
+      )
+    );
+    _optionsElements.Add(
+      new ModOptionsCheckbox(
         I18n.ShowExtraItemInformation(),
         whichOption++,
         showItemHoverInformation.ToggleOption,

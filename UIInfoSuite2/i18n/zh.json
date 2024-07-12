@@ -85,6 +85,7 @@
   "ShowCropAndBarrelTooltip": "显示作物与桶的剩余时间",
   "ShowItemEffectRanges": "显示稻草人与洒水器的范围",
   "ButtonControlShow": "按下LeftCtrl显示单个，同时按下LeftAlt显示全部",
+  "ShowBombRange": "显示炸弹摧毁范围",
   "ShowExtraItemInformation": "鼠标悬停时显示物品信息",
   "ShowHarvestPricesInShop": "在购买页面显示收获价格",
   //Settings - Tabs info

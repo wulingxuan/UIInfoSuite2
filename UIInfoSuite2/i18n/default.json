@@ -91,6 +91,7 @@
   "ShowCropAndBarrelTooltip": "Show crop and barrel times",
   "ShowItemEffectRanges": "Show scarecrow and sprinkler range",
   "ButtonControlShow": "Press leftctrl to show a single one, while pressing leftalt to show them all",
+  "ShowBombRange": "Show the bomb destroying Range",
   "ShowExtraItemInformation": "Show item hover information",
   "ShowHarvestPricesInShop": "Show shop harvest prices",
   //Settings - Tabs info

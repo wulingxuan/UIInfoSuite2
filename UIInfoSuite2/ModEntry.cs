@@ -186,40 +186,5 @@ public class ModEntry : Mod
       }
     }
   }
-
-  //public static void RegisterItemEffectRangesBindings(IModHelper helper, bool subscribe)
-  //{
-  //  if (_calendarAndQuestKeyBindingsHandler == null)
-  //  {
-  //    _calendarAndQuestKeyBindingsHandler = (sender, e) => HandleCalendarAndQuestKeyBindings(helper);
-  //  }
-
-  //  helper.Events.Input.ButtonsChanged -= _calendarAndQuestKeyBindingsHandler;
-
-  //  if (subscribe)
-  //  {
-  //    helper.Events.Input.ButtonsChanged += _calendarAndQuestKeyBindingsHandler;
-  //  }
-  //}
-
-  public static void HandleItemEffectRangesBindings(object? sender, ButtonsChangedEventArgs e)
-  {
-    if (_modConfig != null)
-    {
-      if (Context.IsPlayerFree)
-      {
-        if (_modConfig.ShowAllRange.JustPressed())
-        {
-          MonitorObject.Log("显示全部面积", LogLevel.Debug);
-        }
-        else if (_modConfig.ShowOneRange.JustPressed())
-        {
-          MonitorObject.Log("显示单个面积", LogLevel.Debug); 
-        }
-        
-      }
-    }
-  }
-
 #endregion
 }

@@ -436,6 +436,10 @@ internal class ShowCropAndBarrelTime : IDisposable
         string cropName = DropsHelper.GetCropHarvestName(crop);
         string daysLeftStr = daysLeft <= 0 ? I18n.ReadyToHarvest() : $"{daysLeft} {I18n.Days()}";
         entries.Add($"{cropName}: {daysLeftStr}");
+
+        string waterStatus = hoeDirt.state.Value == 1 ? I18n.Watered() : I18n.NotWatered();
+        entries.Add(waterStatus);
+
         if (!string.IsNullOrEmpty(fertilizerStr))
         {
           fertilizerStr = $"({I18n.With()} {fertilizerStr})";

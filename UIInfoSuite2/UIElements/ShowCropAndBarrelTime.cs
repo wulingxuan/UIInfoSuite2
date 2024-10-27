@@ -12,6 +12,7 @@ using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using StardewValley.TokenizableStrings;
 using UIInfoSuite2.Compatibility;
 using UIInfoSuite2.Compatibility.CustomBush;
 using UIInfoSuite2.Infrastructure.Extensions;
@@ -539,7 +540,9 @@ internal class ShowCropAndBarrelTime : IDisposable
         {
           droppedItems.Clear();
           willProduceThisSeason = customBushData.Seasons.Contains(Game1.season);
-          bushName = $"{customBushData.DisplayName} Bush";
+          string displayName = customBushData.DisplayName;
+          if(displayName.Contains("LocalizedText")) displayName = TokenParser.ParseText(displayName);
+          bushName = $"{displayName} Bush";
           ageToMature = customBushData.AgeToProduce;
           inProductionPeriod = Game1.dayOfMonth >= customBushData.DayToBeginProducing;
           daysUntilProductionPeriod = inProductionPeriod ? 0 : 22 - Game1.dayOfMonth;

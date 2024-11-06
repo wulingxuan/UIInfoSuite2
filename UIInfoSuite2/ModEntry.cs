@@ -14,7 +14,7 @@ namespace UIInfoSuite2;
 public class ModEntry : Mod
 {
   private static SkipIntro _skipIntro; // Needed so GC won't throw away object with subscriptions
-  private static ModConfig _modConfig;
+  public static ModConfig _modConfig;
 
   private static EventHandler<ButtonsChangedEventArgs> _calendarAndQuestKeyBindingsHandler;
 
@@ -91,6 +91,26 @@ public class ModEntry : Mod
       getValue: () => _modConfig.OpenQuestBoardKeybind,
       setValue: value => _modConfig.OpenQuestBoardKeybind = value
     );
+    // Show item effect ranges
+    configMenu.AddSectionTitle(
+      ModManifest,
+      text: () => I18n.Keybinds_Subtitle_ShowRange_DisplayedName(),
+      tooltip: () => I18n.Keybinds_Subtitle_ShowRange_Tooltip()
+      );
+    configMenu.AddKeybindList(
+      ModManifest,
+      name: () => I18n.Keybinds_ShowOneRange_DisplayedName(),
+      tooltip: () => I18n.Keybinds_ShowOneRange_Tooltip(),
+      getValue: () => _modConfig.ShowOneRange,
+      setValue: value => _modConfig.ShowOneRange = value
+    );
+    configMenu.AddKeybindList(
+      ModManifest,
+      name: () => I18n.Keybinds_ShowAllRange_DisplayedName(),
+      tooltip: () => I18n.Keybinds_ShowAllRange_Tooltip(),
+      getValue: () => _modConfig.ShowAllRange,
+      setValue: value => _modConfig.ShowAllRange = value
+      );
   }
 #endregion
 

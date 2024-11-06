@@ -1,6 +1,13 @@
-{
+﻿{
   // GUI - Game Menu
   "OptionsTabTooltip": "UI Info Suite 2 Options",
+  // some config options
+  "Keybinds.Subtitle.ShowRange.displayedName": "Show item effect ranges",
+  "Keybinds.Subtitle.ShowRange.Tooltip": "Such: scarecrow, sprinkler, Junimo Hut, bee house, mushroom log and mossy seed.",
+  "Keybinds.ShowOneRange.DisplayedName": "Show current item range",
+  "Keybinds.ShowOneRange.Tooltip": "When the mouse moves over the item you want to show, show range.",
+  "Keybinds.ShowAllRange.DisplayedName": "Show all item range",
+  "Keybinds.ShowAllRange.Tooltip": "When the mouse moves over the item you want to show, all ranges are show.",
   //GUI - Billboard
   "Billboard": "Billboard",
   "Calendar": "Calendar",
@@ -79,6 +86,8 @@
   "HideAnimalPetOnMaxFriendship": "Hide on max friendship",
   "ShowCropAndBarrelTooltip": "Show crop and barrel times",
   "ShowItemEffectRanges": "Show scarecrow and sprinkler range",
+  "ButtonControlShow": "Press leftctrl to show current item range, while pressing leftalt to show all item range",
+  "ShowBombRange": "Show the bomb destroying Range",
   "ShowExtraItemInformation": "Show item hover information",
   "ShowHarvestPricesInShop": "Show shop harvest prices",
   //Settings - Tabs info

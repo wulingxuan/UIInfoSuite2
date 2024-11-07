@@ -16,7 +16,7 @@ namespace UIInfoSuite2.UIElements;
 
 internal class ShowItemEffectRanges : IDisposable
 {
-  #region Properties
+#region Properties
   private readonly PerScreen<List<Point>> _effectiveAreaCurrent = new(() => new List<Point>());
   private readonly PerScreen<HashSet<Point>> _effectiveAreaOther = new(() => new HashSet<Point>());
   private readonly PerScreen<HashSet<Point>> _effectiveAreaIntersection = new(() => new HashSet<Point>());
@@ -30,11 +30,10 @@ internal class ShowItemEffectRanges : IDisposable
 
   private bool ButtonShowOneRange { get; set; }
   private bool ButtonShowAllRanges { get; set; }
+#endregion
 
-  #endregion
 
-
-  #region Lifecycle
+#region Lifecycle
   public ShowItemEffectRanges(IModHelper helper)
   {
     _helper = helper;
@@ -69,14 +68,15 @@ internal class ShowItemEffectRanges : IDisposable
       _helper.Events.Input.ButtonsChanged += OnButtonChanged;
     }
   }
+
   public void ToggleShowBombRangeOption(bool showBombRange)
   {
     ShowBombRange = showBombRange;
   }
-  #endregion
+#endregion
 
 
-  #region Event subscriptions
+#region Event subscriptions
   private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
   {
     if (!e.IsMultipleOf(4))
@@ -108,8 +108,15 @@ internal class ShowItemEffectRanges : IDisposable
     {
       UpdateEffectiveArea();
       GetOverlapValue();
-      if (ButtonShowOneRange) ButtonShowOneRange = false;
-      if (ButtonShowAllRanges) ButtonShowAllRanges = false;
+      if (ButtonShowOneRange)
+      {
+        ButtonShowOneRange = false;
+      }
+
+      if (ButtonShowAllRanges)
+      {
+        ButtonShowAllRanges = false;
+      }
     }
   }
 
@@ -137,6 +144,7 @@ internal class ShowItemEffectRanges : IDisposable
             0.01f
           );
         }
+
         foreach (Point point in _effectiveAreaIntersection.Value)
         {
           var position = new Vector2(
@@ -173,6 +181,7 @@ internal class ShowItemEffectRanges : IDisposable
         {
           ButtonShowOneRange = true;
         }
+
         if (ModEntry._modConfig.ShowAllRange.IsDown())
         {
           ButtonShowAllRanges = true;
@@ -180,10 +189,10 @@ internal class ShowItemEffectRanges : IDisposable
       }
     }
   }
-  #endregion
+#endregion
 
 
-  #region Logic
+#region Logic
   private void UpdateEffectiveArea()
   {
     int[][] arrayToUse;
@@ -208,24 +217,24 @@ internal class ShowItemEffectRanges : IDisposable
     if (ButtonControlShow && (ButtonShowOneRange || ButtonShowAllRanges))
     {
       Vector2 gamepadTile = Game1.player.CurrentTool != null
-              ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize)
-              : Utility.snapToInt(Game1.player.GetGrabTile());
+        ? Utility.snapToInt(Game1.player.GetToolLocation() / Game1.tileSize)
+        : Utility.snapToInt(Game1.player.GetGrabTile());
       Vector2 mouseTile = Game1.currentCursorTile;
       Vector2 tile = Game1.options.gamepadControls && Game1.timerUntilMouseFade <= 0 ? gamepadTile : mouseTile;
-      if (Game1.currentLocation.Objects?.TryGetValue(tile, out StardewValley.Object? currentObject) ?? false)
+      if (Game1.currentLocation.Objects?.TryGetValue(tile, out Object? currentObject) ?? false)
       {
         if (currentObject != null)
         {
           Vector2 currentTile = Game1.GetPlacementGrabTile();
           Game1.isCheckingNonMousePlacement = !Game1.IsPerformingMousePlacement();
           Vector2 validTile = Utility.snapToInt(
-                                  Utility.GetNearbyValidPlacementPosition(
+                                Utility.GetNearbyValidPlacementPosition(
                                   Game1.player,
                                   Game1.currentLocation,
                                   currentObject,
                                   (int)currentTile.X * Game1.tileSize,
                                   (int)currentTile.Y * Game1.tileSize
-                                  )
+                                )
                               ) /
                               Game1.tileSize;
           Game1.isCheckingNonMousePlacement = false;
@@ -234,8 +243,8 @@ internal class ShowItemEffectRanges : IDisposable
           {
             string itemName = currentObject.Name;
             arrayToUse = itemName.Contains("eluxe")
-                ? GetDistanceArray(ObjectsWithDistance.DeluxeScarecrow, false, currentObject)
-                : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, currentObject);
+              ? GetDistanceArray(ObjectsWithDistance.DeluxeScarecrow, false, currentObject)
+              : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, currentObject);
             AddTilesToHighlightedArea(arrayToUse, true, (int)validTile.X, (int)validTile.Y);
 
             if (ButtonShowAllRanges)
@@ -245,7 +254,7 @@ internal class ShowItemEffectRanges : IDisposable
               {
                 if (!next.Equals(currentObject))
                 {
-                  var arrayToUse_ = next.Name.IndexOf("eluxe", StringComparison.OrdinalIgnoreCase) >= 0
+                  int[][] arrayToUse_ = next.Name.IndexOf("eluxe", StringComparison.OrdinalIgnoreCase) >= 0
                     ? GetDistanceArray(ObjectsWithDistance.DeluxeScarecrow, false, next)
                     : GetDistanceArray(ObjectsWithDistance.Scarecrow, false, next);
                   if (!arrayToUse_.SequenceEqual(arrayToUse))
@@ -261,8 +270,10 @@ internal class ShowItemEffectRanges : IDisposable
             IEnumerable<Vector2> unplacedSprinklerTiles = currentObject.GetSprinklerTiles();
             if (currentObject.TileLocation != validTile)
             {
-              unplacedSprinklerTiles = unplacedSprinklerTiles.Select(tile => tile - currentObject.TileLocation + validTile);
+              unplacedSprinklerTiles =
+                unplacedSprinklerTiles.Select(tile => tile - currentObject.TileLocation + validTile);
             }
+
             AddTilesToHighlightedArea(unplacedSprinklerTiles, true);
 
             if (ButtonShowAllRanges)
@@ -478,17 +489,18 @@ internal class ShowItemEffectRanges : IDisposable
   }
 
   /// <summary>
-  /// Extract the overlapping area.
+  ///   Extract the overlapping area.
   /// </summary>
   private void GetOverlapValue()
   {
-    PerScreen<HashSet<Point>> temp = new PerScreen<HashSet<Point>>();
+    var temp = new PerScreen<HashSet<Point>>();
     _effectiveAreaIntersection.Value = _effectiveAreaOther.Value.Intersect(_effectiveAreaCurrent.Value).ToHashSet();
     temp.Value = _effectiveAreaCurrent.Value.Except(_effectiveAreaOther.Value).ToHashSet();
     _effectiveAreaOther.Value = _effectiveAreaOther.Value.Except(_effectiveAreaCurrent.Value).ToHashSet();
     _effectiveAreaOther.Value = _effectiveAreaOther.Value.Union(temp.Value).ToHashSet();
   }
-  #region Distance map
+
+#region Distance map
   private enum ObjectsWithDistance
   {
     JunimoHut,
@@ -597,6 +609,6 @@ internal class ShowItemEffectRanges : IDisposable
   {
     return Math.Sqrt((radius - i) * (radius - i) + (radius - j) * (radius - j));
   }
-  #endregion
-  #endregion
+#endregion
+#endregion
 }

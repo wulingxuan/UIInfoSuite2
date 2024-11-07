@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,7 +20,7 @@ internal class LocationOfTownsfolk : IDisposable
 {
 #region Properties
   private SocialPage _socialPage = null!;
-  private List<string> _friendNames = new();
+  private readonly List<string> _friendNames = new();
   private readonly List<NPC> _townsfolk = new();
   private readonly List<OptionsCheckbox> _checkboxes = new();
 
@@ -138,10 +137,11 @@ internal class LocationOfTownsfolk : IDisposable
         if (menu is SocialPage socialPage)
         {
           _socialPage = socialPage;
-          foreach (var SocialEntries in socialPage.SocialEntries)
+          foreach (SocialPage.SocialEntry? SocialEntries in socialPage.SocialEntries)
           {
             _friendNames.Add(SocialEntries.InternalName);
           }
+
           break;
         }
       }
@@ -171,7 +171,6 @@ internal class LocationOfTownsfolk : IDisposable
 
   private void CheckSelectedBox(ButtonPressedEventArgs e)
   {
-
     for (int i = _socialPage.slotPosition; i < _socialPage.slotPosition + 5; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
@@ -276,7 +275,8 @@ internal class LocationOfTownsfolk : IDisposable
       {
         bool shouldDrawCharacter = Game1.player.friendshipData.ContainsKey(character.Name) &&
                                    _options.ShowLocationOfFriends.GetOrDefault(character.Name, true) &&
-                                   character.id != -1 && character.IsInvisible != true;
+                                   character.id != -1 &&
+                                   character.IsInvisible != true;
         if (shouldDrawCharacter)
         {
           DrawNPC(character, namesToShow);

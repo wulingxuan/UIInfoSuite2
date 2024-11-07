@@ -7,7 +7,6 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using UIInfoSuite2.Infrastructure;
-using UIInfoSuite2.Infrastructure.Extensions;
 
 namespace UIInfoSuite2.UIElements;
 
@@ -149,7 +148,10 @@ internal class ShowRainyDayIcon : IDisposable
     // Setup Texture sheet as a copy, so as not to disturb existing sprites
     _iconSheet = new Texture2D(Game1.graphics.GraphicsDevice, WeatherSheetWidth, WeatherSheetHeight);
     _weatherIconColors = new Color[WeatherSheetWidth * WeatherSheetHeight];
-    Texture2D weatherBorderTexture = Texture2D.FromFile(Game1.graphics.GraphicsDevice, Path.Combine(_helper.DirectoryPath, "assets", "weatherbox.png"));
+    Texture2D weatherBorderTexture = Texture2D.FromFile(
+      Game1.graphics.GraphicsDevice,
+      Path.Combine(_helper.DirectoryPath, "assets", "weatherbox.png")
+    );
     var weatherBorderColors = new Color[15 * 15];
     var cursorColors = new Color[Game1.mouseCursors.Width * Game1.mouseCursors.Height];
     var cursorColors_1_6 = new Color[Game1.mouseCursors_1_6.Width * Game1.mouseCursors_1_6.Height];
@@ -162,7 +164,12 @@ internal class ShowRainyDayIcon : IDisposable
 
     // Copy over the bits we want
     // Border from TV screen
-    Tools.GetSubTexture(subTextureColors, weatherBorderColors, new Rectangle(0, 0, 15, 15), new Rectangle(0, 0, 15, 15));
+    Tools.GetSubTexture(
+      subTextureColors,
+      weatherBorderColors,
+      new Rectangle(0, 0, 15, 15),
+      new Rectangle(0, 0, 15, 15)
+    );
     // Copy to each destination
     for (var i = 0; i < 4; i++)
     {

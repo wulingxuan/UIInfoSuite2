@@ -245,12 +245,12 @@ internal class ModOptionsPageHandler : IDisposable
       )
     );
     var ScarecrowAndSprinklerRangeIcon = new ModOptionsCheckbox(
-        I18n.ShowItemEffectRanges(),
-        whichOption++,
-        showScarecrowAndSprinklerRange.ToggleOption,
-        () => options.ShowItemEffectRanges,
-        v => options.ShowItemEffectRanges = v
-      );
+      I18n.ShowItemEffectRanges(),
+      whichOption++,
+      showScarecrowAndSprinklerRange.ToggleOption,
+      () => options.ShowItemEffectRanges,
+      v => options.ShowItemEffectRanges = v
+    );
     _optionsElements.Add(ScarecrowAndSprinklerRangeIcon);
     _optionsElements.Add(
       new ModOptionsCheckbox(
@@ -380,6 +380,7 @@ internal class ModOptionsPageHandler : IDisposable
     {
       item.Dispose();
     }
+
     _helper.Events.Input.ButtonPressed -= OnButtonPressed;
     _helper.Events.GameLoop.UpdateTicking -= OnUpdateTicking;
     _helper.Events.GameLoop.UpdateTicked -= OnUpdateTicked;

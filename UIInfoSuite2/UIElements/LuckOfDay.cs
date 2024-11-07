@@ -6,7 +6,6 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using UIInfoSuite2.Infrastructure;
-using UIInfoSuite2.Infrastructure.Extensions;
 
 namespace UIInfoSuite2.UIElements;
 
@@ -153,10 +152,7 @@ internal class LuckOfDay : IDisposable
       // Rewrite the text, but keep the color
       if (ShowExactValue)
       {
-        _hoverText.Value = string.Format(
-          I18n.DailyLuckValue(),
-          Game1.player.DailyLuck.ToString("N3")
-        );
+        _hoverText.Value = string.Format(I18n.DailyLuckValue(), Game1.player.DailyLuck.ToString("N3"));
       }
     }
   }

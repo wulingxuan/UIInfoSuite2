@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -9,7 +8,6 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Menus;
 using UIInfoSuite2.Infrastructure;
-using UIInfoSuite2.Infrastructure.Extensions;
 
 namespace UIInfoSuite2.UIElements;
 
@@ -56,13 +54,13 @@ internal class ShowRobinBuildingStatusIcon : IDisposable
 #endregion
 
 #region Event subscriptions
-
   public void OnTickInRobinHouse(object? sender, OneSecondUpdateTickedEventArgs e)
   {
     if (Game1.currentLocation?.Name != "ScienceHouse")
     {
       return;
     }
+
     UpdateRobinBuindingStatusData();
   }
 
@@ -112,18 +110,12 @@ internal class ShowRobinBuildingStatusIcon : IDisposable
       {
         if (building.daysOfConstructionLeft.Value > building.daysUntilUpgrade.Value)
         {
-          hoverText = string.Format(
-            I18n.RobinBuildingStatus(),
-            building.daysOfConstructionLeft.Value
-          );
+          hoverText = string.Format(I18n.RobinBuildingStatus(), building.daysOfConstructionLeft.Value);
           return true;
         }
 
         // Add another translation string for this?
-        hoverText = string.Format(
-          I18n.RobinBuildingStatus(),
-          building.daysUntilUpgrade.Value
-        );
+        hoverText = string.Format(I18n.RobinBuildingStatus(), building.daysUntilUpgrade.Value);
         return true;
       }
 

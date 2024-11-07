@@ -14,9 +14,9 @@ public enum Sounds
 public class SoundHelper
 {
   private static readonly Lazy<SoundHelper> LazyInstance = new(() => new SoundHelper());
+  private bool _initialized;
 
   private string _modId = "InfoSuite";
-  private bool _initialized;
 
   protected SoundHelper() { }
 
@@ -56,7 +56,8 @@ public class SoundHelper
     {
       newCueDefinition.instanceLimit = instanceLimit;
       newCueDefinition.limitBehavior = limitBehavior ?? CueDefinition.LimitBehavior.ReplaceOldest;
-    } else if (limitBehavior.HasValue)
+    }
+    else if (limitBehavior.HasValue)
     {
       newCueDefinition.limitBehavior = limitBehavior.Value;
     }

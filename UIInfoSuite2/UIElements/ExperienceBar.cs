@@ -8,7 +8,6 @@ using StardewValley;
 using StardewValley.Tools;
 using UIInfoSuite2.Compatibility;
 using UIInfoSuite2.Infrastructure;
-using UIInfoSuite2.Infrastructure.Extensions;
 using UIInfoSuite2.UIElements.ExperienceElements;
 
 namespace UIInfoSuite2.UIElements;

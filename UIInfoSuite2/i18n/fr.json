@@ -72,7 +72,7 @@
   "ShowExperienceGain": "Afficher le gain d'expérience",
   "ShowLocationOfTownsPeople": "Afficher les habitants sur la carte",
   "ShowAnimalsNeedPets": "Afficher quand les animaux ont besoin de câlins",
-  "HideAnimalPetOnMaxFriendship": "Masquer avec l'amitié maximale",
+  "HideAnimalPetOnMaxFriendship": "Masquer lorsque l'amitié est maximale",
   "ShowCropAndBarrelTooltip": "Afficher le temps des cultures et des tonneaux",
   "ShowItemEffectRanges": "Afficher la portée des épouvantails et des arroseurs",
   "ShowExtraItemInformation": "Afficher des informations supplémentaires sur les objets",
@@ -83,7 +83,7 @@
   "ShowTodaysGifts": "Afficher les cadeaux donnés aujourd'hui",
   //Settings - Show icons
   "ShowBirthdayIcon": "Afficher l'icône d'anniversaire",
-  "HideBirthdayIfFullFriendShip": "Masquer avec l'amitié maximale",
+  "HideBirthdayIfFullFriendShip": "Masquer lorsque l'amitié est maximale",
   "ShowTravelingMerchant": "Afficher le marchand itinérant",
   "HideMerchantWhenVisited": "Masquer après visite",
   "ShowRainyDay": "Afficher les jours de pluie",
@@ -92,7 +92,7 @@
   "ShowRobinBuildingStatusIcon": "Afficher l'icône du statut des constructions de Robin",
   "ShowLuckIcon": "Afficher l'icône de chance",
   "ShowExactValue": "Afficher la valeur exacte",
-  "ShowSeasonalBerry": "Afficher les objets de ceuillette saisonniers",
+  "ShowSeasonalBerry": "Afficher les objets de cueillette saisonniers",
   "ShowSeasonalBerryHazelnut": "Afficher les noisettes sur les arbres",
   //Others
   "LevelUp": "Montée de niveau"

@@ -171,12 +171,8 @@ internal class LocationOfTownsfolk : IDisposable
 
   private void CheckSelectedBox(ButtonPressedEventArgs e)
   {
-    var slotPosition =
-      (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
-        _socialPage
-      )!;
 
-    for (int i = slotPosition; i < slotPosition + 5; ++i)
+    for (int i = _socialPage.slotPosition; i < _socialPage.slotPosition + 5; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
       var rect = new Rectangle(checkbox.bounds.X, checkbox.bounds.Y, checkbox.bounds.Width, checkbox.bounds.Height);
@@ -209,13 +205,9 @@ internal class LocationOfTownsfolk : IDisposable
       true
     );
 
-    var slotPosition =
-      (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
-        _socialPage
-      )!;
     var yOffset = 0;
 
-    for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Count; ++i)
+    for (int i = _socialPage.slotPosition; i < _socialPage.slotPosition + 5 && i < _friendNames.Count; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
       checkbox.bounds.X = Game1.activeClickableMenu.xPositionOnScreen - 60;

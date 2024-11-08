@@ -541,7 +541,11 @@ internal class ShowCropAndBarrelTime : IDisposable
           droppedItems.Clear();
           willProduceThisSeason = customBushData.Seasons.Contains(Game1.season);
           string displayName = customBushData.DisplayName;
-          if(displayName.Contains("LocalizedText")) displayName = TokenParser.ParseText(displayName);
+          if (displayName.Contains("LocalizedText"))
+          {
+            displayName = TokenParser.ParseText(displayName);
+          }
+
           bushName = $"{displayName} Bush";
           ageToMature = customBushData.AgeToProduce;
           inProductionPeriod = Game1.dayOfMonth >= customBushData.DayToBeginProducing;

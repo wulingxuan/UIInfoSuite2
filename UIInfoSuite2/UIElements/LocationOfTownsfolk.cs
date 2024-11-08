@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,7 +20,7 @@ internal class LocationOfTownsfolk : IDisposable
 {
 #region Properties
   private SocialPage _socialPage = null!;
-  private string[] _friendNames = null!;
+  private readonly List<string> _friendNames = new();
   private readonly List<NPC> _townsfolk = new();
   private readonly List<OptionsCheckbox> _checkboxes = new();
 
@@ -132,18 +131,23 @@ internal class LocationOfTownsfolk : IDisposable
   {
     if (Game1.activeClickableMenu is GameMenu gameMenu)
     {
+      _friendNames.Clear();
       foreach (IClickableMenu? menu in gameMenu.pages)
       {
         if (menu is SocialPage socialPage)
         {
           _socialPage = socialPage;
-          _friendNames = socialPage.GetAllNpcs().Select(n => n.Name).ToArray();
+          foreach (SocialPage.SocialEntry? SocialEntries in socialPage.SocialEntries)
+          {
+            _friendNames.Add(SocialEntries.InternalName);
+          }
+
           break;
         }
       }
 
       _checkboxes.Clear();
-      for (var i = 0; i < _friendNames.Length; i++)
+      for (var i = 0; i < _friendNames.Count; i++)
       {
         string friendName = _friendNames[i];
         var checkbox = new OptionsCheckbox("", i);
@@ -167,12 +171,7 @@ internal class LocationOfTownsfolk : IDisposable
 
   private void CheckSelectedBox(ButtonPressedEventArgs e)
   {
-    var slotPosition =
-      (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
-        _socialPage
-      )!;
-
-    for (int i = slotPosition; i < slotPosition + 5; ++i)
+    for (int i = _socialPage.slotPosition; i < _socialPage.slotPosition + 5; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
       var rect = new Rectangle(checkbox.bounds.X, checkbox.bounds.Y, checkbox.bounds.Width, checkbox.bounds.Height);
@@ -205,13 +204,9 @@ internal class LocationOfTownsfolk : IDisposable
       true
     );
 
-    var slotPosition =
-      (int)typeof(SocialPage).GetField("slotPosition", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(
-        _socialPage
-      )!;
     var yOffset = 0;
 
-    for (int i = slotPosition; i < slotPosition + 5 && i < _friendNames.Length; ++i)
+    for (int i = _socialPage.slotPosition; i < _socialPage.slotPosition + 5 && i < _friendNames.Count; ++i)
     {
       OptionsCheckbox checkbox = _checkboxes[i];
       checkbox.bounds.X = Game1.activeClickableMenu.xPositionOnScreen - 60;
@@ -266,7 +261,7 @@ internal class LocationOfTownsfolk : IDisposable
 
       if (checkbox.bounds.Contains(Game1.getMouseX(), Game1.getMouseY()))
       {
-        IClickableMenu.drawHoverText(Game1.spriteBatch, "Track on map", Game1.dialogueFont);
+        IClickableMenu.drawHoverText(Game1.spriteBatch, I18n.TrackOnMap(), Game1.dialogueFont);
       }
     }
   }
@@ -280,7 +275,8 @@ internal class LocationOfTownsfolk : IDisposable
       {
         bool shouldDrawCharacter = Game1.player.friendshipData.ContainsKey(character.Name) &&
                                    _options.ShowLocationOfFriends.GetOrDefault(character.Name, true) &&
-                                   character.id != -1 && character.IsInvisible != true;
+                                   character.id != -1 &&
+                                   character.IsInvisible != true;
         if (shouldDrawCharacter)
         {
           DrawNPC(character, namesToShow);

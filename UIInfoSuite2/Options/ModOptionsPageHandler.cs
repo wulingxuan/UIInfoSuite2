@@ -593,7 +593,7 @@ internal class ModOptionsPageHandler : IDisposable
 
   private void OnRenderingMenu(object? sender, RenderingActiveMenuEventArgs e)
   {
-    if (Game1.activeClickableMenu is GameMenu gameMenu)
+    if (Game1.activeClickableMenu is GameMenu gameMenu && gameMenu.GetChildMenu() == null)
     {
       // Draw our tab icon behind the menu even if it is dimmed by the menu's transparent background,
       // so that it still displays during transitions eg. when a letter is viewed in the collections tab
@@ -603,36 +603,35 @@ internal class ModOptionsPageHandler : IDisposable
 
   private void OnRenderedMenu(object? sender, RenderedActiveMenuEventArgs e)
   {
-    if (Game1.activeClickableMenu is GameMenu gameMenu
-        // But don't render when the map is displayed...
-        &&
-        !(gameMenu.currentTab == GameMenu.mapTab
-          // ...or when a letter is opened in the collection's page
-          ||
-          (gameMenu.GetCurrentPage() is CollectionsPage cPage && cPage.letterviewerSubMenu != null)))
+    if (Game1.activeClickableMenu is not GameMenu gameMenu ||
+        gameMenu.currentTab == GameMenu.mapTab ||
+        gameMenu.GetChildMenu() != null ||
+        gameMenu.GetCurrentPage() is CollectionsPage { letterviewerSubMenu: not null })
     {
-      DrawButton(gameMenu);
+      return;
+    }
 
-      Tools.DrawMouseCursor();
+    DrawButton(gameMenu);
 
-      // Draw the game menu's hover text again so it displays above our tab
+    Tools.DrawMouseCursor();
+
+    // Draw the game menu's hover text again so it displays above our tab
+    if (!gameMenu.hoverText.Equals(""))
+    {
+      IClickableMenu.drawHoverText(Game1.spriteBatch, gameMenu.hoverText, Game1.smallFont);
+    }
+
+    // Draw our tab's hover text
+    if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(), Game1.getMouseY()) == true)
+    {
+      IClickableMenu.drawHoverText(Game1.spriteBatch, I18n.OptionsTabTooltip(), Game1.smallFont);
+
       if (!gameMenu.hoverText.Equals(""))
       {
-        IClickableMenu.drawHoverText(Game1.spriteBatch, gameMenu.hoverText, Game1.smallFont);
-      }
-
-      // Draw our tab's hover text
-      if (_modOptionsTab.Value?.containsPoint(Game1.getMouseX(), Game1.getMouseY()) == true)
-      {
-        IClickableMenu.drawHoverText(Game1.spriteBatch, I18n.OptionsTabTooltip(), Game1.smallFont);
-
-        if (!gameMenu.hoverText.Equals(""))
-        {
-          ModEntry.MonitorObject.LogOnce(
-            $"{GetType().Name}: Both our mod options tab and the game are displaying hover text",
-            LogLevel.Warn
-          );
-        }
+        ModEntry.MonitorObject.LogOnce(
+          $"{GetType().Name}: Both our mod options tab and the game are displaying hover text",
+          LogLevel.Warn
+        );
       }
     }
   }

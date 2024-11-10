@@ -139,6 +139,7 @@ public class ModEntry : Mod
                   Helper.Data.ReadJsonFile<ModOptions>($"data/{_modConfig.ApplyDefaultSettingsFromThisSave}.json") ??
                   new ModOptions();
 
+    _modOptionsPageHandler?.Dispose();
     _modOptionsPageHandler = new ModOptionsPageHandler(Helper, _modOptions, _modConfig.ShowOptionsTabInMenu);
   }
 
